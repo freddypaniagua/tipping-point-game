@@ -53,6 +53,7 @@ button:disabled, input:disabled { opacity: .5; cursor: default; }
 .reveal { margin-top: 20px; animation: fade .5s ease-out; }
 .reveal[hidden] { display: none; }
 .answer { margin: 0 0 8px; font-size: 22px; }
+.result { margin: 0 0 8px; font-size: 16px; color: var(--brass-dark); font-variant-numeric: tabular-nums; }
 .fact { margin: 0; color: var(--muted); line-height: 1.4; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 

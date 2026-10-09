@@ -1,6 +1,7 @@
 import "./style.css";
 import { createGuessInput } from "./input";
 import { createScale } from "./scale";
+import { score } from "./scoring";
 import { EIFFEL_VS_WHALES as weighin, displayAnswer } from "./weighin";
 
 const $ = <T extends Element>(sel: string) => document.querySelector<T>(sel)!;
@@ -32,7 +33,11 @@ controls.addEventListener("submit", async (e) => {
   });
 
   // Only now, after the beam has settled, do we reveal the real count.
-  $("#answer").textContent = displayAnswer(weighin).toLocaleString();
+  // Score against the number we display, so players can check the math themselves.
+  const answer = displayAnswer(weighin);
+  const result = score(guess, answer);
+  $("#answer").textContent = answer.toLocaleString();
+  $("#result").textContent = `You said ${guess.toLocaleString()} · ${result.label} · ${result.points} points`;
   $("#fact").textContent = weighin.funFact;
   reveal.hidden = false;
 });
