@@ -1,0 +1,24 @@
+{
+  "name": "tipping-point-game",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freddypaniagua/tipping-point-game.git"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/freddypaniagua/tipping-point-game/issues"
+  },
+  "homepage": "https://github.com/freddypaniagua/tipping-point-game#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  },
+  "private": true
+}
