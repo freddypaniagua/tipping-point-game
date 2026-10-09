@@ -13,7 +13,7 @@ A daily browser estimation game. Each day every player gets the same 5 "weigh-in
 - After commit: the chosen number of objects multiplies onto the right pan, the beam swings, wobbles (~1s) and settles. Too many → right pan sinks; too few → it lifts.
 - The scale tilts only according to the player's guess. Nothing marks the true balance point during the suspense. The real answer and a fun fact appear only after it settles. No "correct/wrong" text.
 - Scoring is ratio-based: error = |log10(guess / answer)|. Starting bands: within 10% = 100, 1.5x = 75, 3x = 50, 10x = 20, worse = 0. All weigh-ins worth equal points.
-- Content comes from our own curated object database (weights stored in kg, sources kept internally, not shown to players).
+- Content comes from our own curated object database (weights stored in pounds (lb); all units American/US customary, sources kept internally, not shown to players).
 
 ## Still open (ask before assuming)
 - Input: brass dial (snapping 1, 2, 3, 5, 10, 20, 30, 50…) vs keyboard vs hybrid. Build mock-ups to compare.

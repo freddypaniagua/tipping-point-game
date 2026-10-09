@@ -102,7 +102,7 @@ Each object record holds:
 | Field | Example | Why |
 | --- | --- | --- |
 | Name | Blue whale | Shown to players |
-| Weight (kg) | 150,000 | Used to compute answers |
+| Weight (lb) | 330,000 | Used to compute answers |
 | Certainty | Average adult; varies | Tells us how generous scoring should be |
 | Category | Animal | Keeps pairs varied |
 | Icon or art | whale.svg | Drawn on the pan |

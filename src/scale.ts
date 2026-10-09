@@ -18,7 +18,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 /** Beam angle when `count` counterweights sit on the right pan. Depends only on real weights. */
 function angleFor(w: Weighin, count: number): number {
   if (count <= 0) return -MAX_ANGLE;
-  const ratio = (count * w.counter.kg) / w.anchor.kg; // right weight / left weight
+  const ratio = (count * w.counter.lb) / w.anchor.lb; // right weight / left weight
   const a = DEG_PER_DECADE * Math.log10(ratio);
   return Math.max(-MAX_ANGLE, Math.min(MAX_ANGLE, a));
 }
