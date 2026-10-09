@@ -1,0 +1,64 @@
+:root {
+  --bg: #f4ecdc;
+  --ink: #2b2118;
+  --muted: #7a6a58;
+  --brass: #c79a3b;
+  --brass-dark: #8c6a2f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.game {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 20px 16px 32px;
+  text-align: center;
+}
+
+.eyebrow { margin: 0 0 6px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 600; }
+
+#scale { width: 100%; height: auto; margin-top: 8px; }
+
+/* Each new whale pops in as it lands. */
+.pop { transform-box: fill-box; transform-origin: center bottom; animation: pop .18s ease-out; }
+@keyframes pop { from { transform: translateY(-10px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.readout { min-height: 1.5em; margin: 0 0 12px; font-size: 18px; font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.stepper { display: flex; gap: 8px; }
+.stepper button, .stepper input {
+  height: 52px; font: inherit; font-size: 22px; border: 2px solid var(--brass-dark);
+  border-radius: 10px; background: #fffaf0; color: var(--ink);
+}
+.stepper button { width: 52px; cursor: pointer; }
+.stepper input { width: 130px; text-align: center; font-variant-numeric: tabular-nums; }
+button:disabled, input:disabled { opacity: .5; cursor: default; }
+
+.commit {
+  width: 100%; max-width: 260px; height: 52px; font: inherit; font-size: 18px; font-weight: 600;
+  color: #fffaf0; background: var(--brass-dark); border: 0; border-radius: 10px; cursor: pointer;
+}
+.commit:active:not(:disabled) { transform: scale(.97); }
+
+.reveal { margin-top: 20px; animation: fade .5s ease-out; }
+.reveal[hidden] { display: none; }
+.answer { margin: 0 0 8px; font-size: 22px; }
+.fact { margin: 0; color: var(--muted); line-height: 1.4; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.dev { margin-top: 24px; font: inherit; font-size: 12px; color: var(--muted); background: none; border: 1px dashed var(--muted); border-radius: 6px; padding: 4px 8px; cursor: pointer; }
+.dev[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pop, .reveal { animation: none; }
+}
