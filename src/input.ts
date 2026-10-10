@@ -2,12 +2,13 @@
 // plus typing an exact number. The input method is still an open decision (dial vs keyboard
 // vs hybrid), so this is isolated behind a tiny interface that main.ts depends on.
 
-const MAX = 100_000;
+/** Largest guess the input accepts; answers must stay under this. */
+export const MAX_GUESS = 100_000;
 
-/** 1, 2, 3, 5, 10, 20, 30, 50, 100, ... up to MAX. */
+/** 1, 2, 3, 5, 10, 20, 30, 50, 100, ... up to MAX_GUESS. */
 const SNAPS: number[] = [];
-for (let decade = 1; decade <= MAX; decade *= 10) {
-  for (const m of [1, 2, 3, 5]) if (decade * m <= MAX) SNAPS.push(decade * m);
+for (let decade = 1; decade <= MAX_GUESS; decade *= 10) {
+  for (const m of [1, 2, 3, 5]) if (decade * m <= MAX_GUESS) SNAPS.push(decade * m);
 }
 
 function nextSnap(v: number): number {
@@ -20,6 +21,8 @@ function prevSnap(v: number): number {
 
 export interface GuessInput {
   value(): number;
+  /** Back to the starting value, ready for the next weigh-in. */
+  reset(): void;
   setEnabled(enabled: boolean): void;
 }
 
@@ -30,7 +33,7 @@ export function createGuessInput(root: HTMLElement, initial = 10): GuessInput {
 
   const read = () => {
     const n = Math.round(Number(field.value));
-    return Number.isFinite(n) ? Math.min(MAX, Math.max(1, n)) : 1;
+    return Number.isFinite(n) ? Math.min(MAX_GUESS, Math.max(1, n)) : 1;
   };
   const write = (n: number) => (field.value = String(n));
 
@@ -42,6 +45,7 @@ export function createGuessInput(root: HTMLElement, initial = 10): GuessInput {
 
   return {
     value: read,
+    reset: () => write(initial),
     setEnabled(enabled) {
       for (const el of [field, down, up]) el.disabled = !enabled;
     },

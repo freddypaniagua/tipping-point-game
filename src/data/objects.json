@@ -1,0 +1,24 @@
+{
+  "eiffel-tower": {
+    "name": "Eiffel Tower",
+    "plural": "Eiffel Towers",
+    "article": "the",
+    "lb": 22300000,
+    "familiarity": "everyday",
+    "category": "landmark",
+    "icon": "tower",
+    "certainty": "Total structure, about 11,100 US tons (10,100 tonnes). The iron frame alone is about 7,300 tonnes.",
+    "source": "TODO verify: figure carried over from the prototype (operator's published total weight)."
+  },
+  "blue-whale": {
+    "name": "blue whale",
+    "plural": "blue whales",
+    "article": "a",
+    "lb": 330000,
+    "familiarity": "everyday",
+    "category": "animal",
+    "icon": "whale",
+    "certainty": "Large adult, about 165 US tons. Adults vary a lot, so this is the high end rather than a strict average.",
+    "source": "TODO verify: figure carried over from the prototype."
+  }
+}

@@ -8,20 +8,27 @@
   <body>
     <main class="game">
       <header>
-        <p class="eyebrow">Weigh-in 1 of 5</p>
-        <h1>How many <span id="counter-name">blue whales</span> balance the <span id="anchor-name">Eiffel Tower</span>?</h1>
+        <p id="progress" class="eyebrow">Weigh-in 1 of 5</p>
+        <h1>How many <span id="counter-name">blue whales</span> balance <span id="anchor-name">the Eiffel Tower</span>?</h1>
       </header>
 
       <svg id="scale" viewBox="0 0 400 330" role="img" aria-label="A balance scale with the Eiffel Tower on the left pan">
         <defs>
-          <symbol id="whale" viewBox="0 0 16 12" overflow="visible">
+          <!-- Object art. Each symbol sits on the bottom of whatever box it is drawn in (YMax),
+               so the same art works as the big anchor and as a small sprite in the pile. -->
+          <symbol id="whale" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <path d="M1 7 C1 3 6 1 10 3 C12 4 13 5 15 3 L15.5 1.5 L15 6 C13.5 8 11 9.5 7 9.5 C3 9.5 1 8.5 1 7Z" fill="#4f7ea8" />
             <circle cx="4" cy="5.6" r=".7" fill="#12202e" />
           </symbol>
-          <symbol id="tower" viewBox="0 0 60 100" overflow="visible">
+          <symbol id="tower" viewBox="0 0 60 100" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <path d="M30 0 L33 22 L38 40 L48 82 L60 100 L48 100 L41 86 L30 80 L19 86 L12 100 L0 100 L12 82 L22 40 L27 22Z" fill="#6b5a4a" />
             <rect x="21" y="38" width="18" height="3" fill="#8a7762" />
             <rect x="12" y="80" width="36" height="3" fill="#8a7762" />
+          </symbol>
+          <!-- Fallback for objects without art yet: a plain brass weight. -->
+          <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
+            <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
+            <path d="M4.5 3 H11.5 L13.5 12 H2.5Z" fill="#a8842f" />
           </symbol>
         </defs>
 
@@ -36,7 +43,7 @@
         <!-- pans hang from the beam ends and stay level -->
         <g id="pan-left">
           <path d="M0 0 L-52 108 M0 0 L52 108" stroke="#8c6a2f" stroke-width="1.5" />
-          <use href="#tower" x="-28" y="12" width="56" height="96" />
+          <use id="anchor-art" href="#tower" x="-28" y="12" width="56" height="96" />
           <path d="M-58 108 H58 Q52 126 0 126 Q-52 126 -58 108Z" fill="#c79a3b" />
         </g>
         <g id="pan-right">
@@ -61,6 +68,7 @@
         <p class="answer">It takes about <strong id="answer"></strong>.</p>
         <p id="result" class="result"></p>
         <p id="fact" class="fact"></p>
+        <button type="button" id="next" class="commit next" hidden>Next weigh-in</button>
       </section>
 
       <button type="button" id="reset" class="dev" hidden>Reset (dev only)</button>
