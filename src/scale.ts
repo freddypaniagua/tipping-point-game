@@ -102,15 +102,19 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
       // Singles drop about one at a time; big counts accelerate and cap at ~2s.
       const dropMs = Math.min(2000, 200 + count * 180);
       return new Promise((resolve) => {
-        const start = performance.now();
-        let last = start;
+        // Time is measured from the first frame's own timestamp. A frame timestamp can be
+        // earlier than a performance.now() taken in the click handler, and a negative elapsed
+        // time turns the easing below into NaN, which would stick in the spring for good.
+        let start: number | null = null;
+        let last = 0;
         let shown = 0;
         let calmSince: number | null = null;
 
         const frame = (now: number) => {
-          const dt = Math.min(0.05, (now - last) / 1000);
+          if (start === null) start = last = now;
+          const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
           last = now;
-          const t = Math.min(1, (now - start) / dropMs);
+          const t = Math.max(0, Math.min(1, (now - start) / dropMs));
           const n = Math.round(count * Math.pow(t, 1.5));
           for (; shown < n; shown++) if (shown < PILE_CAP) addSprite(shown);
           onCount(n);
