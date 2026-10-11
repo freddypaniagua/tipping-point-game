@@ -1,4 +1,5 @@
 import "./style.css";
+import { SAMPLE_STATS, loadCrowd, percentBeaten, type CrowdStats } from "./crowd";
 import { createGuessInput } from "./input";
 import { MAX_POINTS_PER_ROUND, rating, recordRound, shareText, tiltDegrees, totalPoints, type RoundResult } from "./results";
 import { createScale } from "./scale";
@@ -116,6 +117,23 @@ function showResults() {
   $("#share-text").textContent = shareText(rounds);
   $<HTMLElement>("#results").hidden = false;
 
+  // The player's own results are already on screen; everyone else's arrive if and when they can.
+  void loadCrowd(rounds).then((stats) => {
+    if (stats) showCrowd(stats);
+    else if (import.meta.env.DEV) showCrowd(SAMPLE_STATS, " (sample data)"); // layout preview only
+  });
+}
+
+/** Add how today's other players did: a rank line and each round's typical guess. */
+function showCrowd(stats: CrowdStats, note = "") {
+  const rank = $<HTMLElement>("#crowd-rank");
+  const beaten = percentBeaten(totalPoints(rounds), stats.totals);
+  rank.textContent = `Better than ${beaten}% of ${stats.players.toLocaleString()} players today${note}`;
+  rank.hidden = false;
+
+  document.querySelectorAll("#rounds .round-text").forEach((row, i) => {
+    row.append(el("p", "round-detail", `Everyone's typical guess: ${stats.medianGuesses[i].toLocaleString()}`));
+  });
 }
 
 const share = $<HTMLButtonElement>("#share");
