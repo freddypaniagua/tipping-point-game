@@ -29,17 +29,17 @@
     "familiarity": "everyday",
     "category": "animal",
     "certainty": "Average riding horse. Breeds range from about 900 to 1,300 lb; draft horses are far heavier.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "source": "PetMD, 'How Much Does a Horse Weigh?': average adult horse about 1,100 lb (500 kg). https://www.petmd.com/horse/how-much-does-a-horse-weigh"
   },
   "adult-human": {
     "name": "adult human",
     "plural": "adult humans",
     "article": "an",
-    "lb": 180,
+    "lb": 185,
     "familiarity": "everyday",
     "category": "animal",
-    "certainty": "Rough US adult average across men and women.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Midpoint of the US averages for men (199.0 lb) and women (171.8 lb), adults 20 and over.",
+    "source": "CDC NHANES 2021-2023 figures as reported by secondary sites; not yet checked on cdc.gov itself. The 2015-2016 CDC release gave 198 and 171 lb."
   },
   "trojan-horse": {
     "name": "Trojan Horse with 30 soldiers inside",
@@ -48,28 +48,28 @@
     "lb": 26000,
     "familiarity": "obscure",
     "category": "myth",
-    "certainty": "OUR ESTIMATE, placeholder. No ancient source gives a weight, and sources disagree on the crew (about 30 to 50). Needs a worked estimate: timber for a horse of a stated height plus 30 soldiers in bronze armor.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "OUR ESTIMATE, good to about 2x. No ancient source gives a weight. Soldiers: 30 men at about 150 lb plus 50 lb of bronze armor and weapons = 6,000 lb. Horse: a belly about 25 x 8 x 8 ft to hold them, planked in 3 in fir (about 33 lb per cubic foot) is roughly 7,500 lb; doubled for frame, legs, neck, head and wheeled base = about 20,000 lb.",
+    "source": "Crew size: Quintus Smyrnaeus (Posthomerica 12) names about 30 and says there were more; Apollodorus gives 50; Tzetzes 23. Primary texts not checked directly. https://en.wikipedia.org/wiki/Trojan_Horse"
   },
   "mosasaurus": {
     "name": "mosasaurus",
     "plural": "mosasauruses",
     "article": "a",
-    "lb": 30000,
+    "lb": 22000,
     "familiarity": "obscure",
     "category": "prehistoric",
-    "certainty": "Estimate for a large Mosasaurus hoffmannii, about 15 US tons. Published estimates vary by roughly 2x.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Estimate for a large Mosasaurus hoffmannii: about 10 tonnes (11 US tons). Bones only, so uncertain; popular sites quote 15 to 20 tons based on older, disputed length estimates.",
+    "source": "Natural History Museum London, 'What is a mosasaur?' (around 10 tonnes); Fanti et al. 2014 as cited on Wikipedia (10 metric tons). https://www.nhm.ac.uk/discover/what-is-a-mosasaur.html"
   },
   "dodo": {
     "name": "dodo",
     "plural": "dodos",
     "article": "a",
-    "lb": 30,
+    "lb": 26,
     "familiarity": "obscure",
     "category": "animal",
-    "certainty": "Estimate; published figures run from about 23 to 39 lb.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Estimate: mean of about 12 kg from the largest bone sample. Other studies give 10 to 14 kg; old accounts of 50 lb birds are now thought exaggerated.",
+    "source": "van Heteren et al. 2017, PeerJ, 'Neither slim nor fat' (mean about 12 kg); Angst et al. 2011 (10.2 kg). https://peerj.com/articles/4110"
   },
   "gigantopithecus": {
     "name": "Gigantopithecus",
@@ -78,18 +78,18 @@
     "lb": 550,
     "familiarity": "obscure",
     "category": "prehistoric",
-    "certainty": "Estimate from teeth and jaws only; published figures run from about 440 to 660 lb.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Estimate from teeth and jaws only: 200 to 300 kg (440 to 660 lb), midpoint used. Height is disputed, from about 6 ft to 10 ft or more.",
+    "source": "UCL, 'Gigantopithecus blacki: the story so far' (200-300 kg); Guinness World Records, largest primate ever (up to 280-300 kg). https://www.ucl.ac.uk/human-evolution/news/2017/mar/gigantopithecus-blacki-story-so-far"
   },
   "chicken-heart": {
     "name": "chicken heart",
     "plural": "chicken hearts",
     "article": "a",
-    "lb": 0.018,
+    "lb": 0.031,
     "familiarity": "everyday",
     "category": "food",
-    "certainty": "About 8 grams. Varies with the bird, so the pair's answer is loose.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "About 14 g, the heart of a market-age broiler (roughly 0.5 to 0.6% of a 2.2 to 2.5 kg bird). Small or young birds are 4 to 7 g, so the pair's answer is loose.",
+    "source": "Control groups in two broiler studies: 14.1 g at 42 days (PMC7142820) and 13.4 g at 35 days (PMC6533759)."
   },
   "boeing-747": {
     "name": "fully loaded Boeing 747",
@@ -98,17 +98,17 @@
     "lb": 875000,
     "familiarity": "everyday",
     "category": "vehicle",
-    "certainty": "Maximum takeoff weight of a 747-400. Empty it is about 400,000 lb.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Maximum takeoff weight of a standard 747-400. Empty it is about 395,000 to 412,000 lb depending on configuration; usable fuel is about 54,000 gallons (roughly 360,000 lb).",
+    "source": "Boeing figures as relayed by aerocorner.com and aerospaceweb.org; not yet checked against Boeing's airplane characteristics document. https://aerospaceweb.org/aircraft/jetliner/b747"
   },
   "hummingbird": {
     "name": "hummingbird",
     "plural": "hummingbirds",
     "article": "a",
-    "lb": 0.008,
+    "lb": 0.0075,
     "familiarity": "everyday",
     "category": "animal",
-    "certainty": "Ruby-throated hummingbird, about 3.5 grams.",
-    "source": "TODO verify: drafted from memory, not yet checked against a source."
+    "certainty": "Ruby-throated hummingbird, about 3.4 g (males about 3 g, females about 3.5 g). They nearly double in weight before migrating.",
+    "source": "Audubon, '10 Fun Facts About the Ruby-throated Hummingbird'; Journey North weight tables (3.1 to 3.8 g). https://www.audubon.org/magazine/10-fun-facts-about-ruby-throated-hummingbird"
   }
 }
