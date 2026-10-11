@@ -1,7 +1,27 @@
 [
   {
-    "anchor": "eiffel-tower",
-    "counter": "blue-whale",
-    "funFact": "Every seven years the tower gets about 66 tons of fresh paint, which is still less than half a blue whale."
+    "anchor": "horse",
+    "counter": "adult-human",
+    "funFact": "A common rule of thumb is that a horse should carry no more than about a fifth of its own weight, which is roughly one rider and a saddle."
+  },
+  {
+    "anchor": "trojan-horse",
+    "counter": "horse",
+    "funFact": "No ancient writer recorded the horse's weight, so this one is our estimate: a hollow timber horse plus 30 soldiers in bronze armor."
+  },
+  {
+    "anchor": "mosasaurus",
+    "counter": "dodo",
+    "funFact": "A big mosasaurus weighed about 15 tons, more than two African elephants, and it was a lizard."
+  },
+  {
+    "anchor": "gigantopithecus",
+    "counter": "chicken-heart",
+    "funFact": "Gigantopithecus was the largest ape that ever lived: about 10 feet tall and as heavy as three people."
+  },
+  {
+    "anchor": "boeing-747",
+    "counter": "hummingbird",
+    "funFact": "A fully loaded 747 weighs over 400 tons, and around 40% of that can be fuel."
   }
 ]

@@ -20,5 +20,95 @@
     "icon": "whale",
     "certainty": "Large adult, about 165 US tons. Adults vary a lot, so this is the high end rather than a strict average.",
     "source": "TODO verify: figure carried over from the prototype."
+  },
+  "horse": {
+    "name": "horse",
+    "plural": "horses",
+    "article": "a",
+    "lb": 1100,
+    "familiarity": "everyday",
+    "category": "animal",
+    "certainty": "Average riding horse. Breeds range from about 900 to 1,300 lb; draft horses are far heavier.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "adult-human": {
+    "name": "adult human",
+    "plural": "adult humans",
+    "article": "an",
+    "lb": 180,
+    "familiarity": "everyday",
+    "category": "animal",
+    "certainty": "Rough US adult average across men and women.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "trojan-horse": {
+    "name": "Trojan Horse with 30 soldiers inside",
+    "plural": "Trojan Horses",
+    "article": "the",
+    "lb": 26000,
+    "familiarity": "obscure",
+    "category": "myth",
+    "certainty": "OUR ESTIMATE, placeholder. No ancient source gives a weight, and sources disagree on the crew (about 30 to 50). Needs a worked estimate: timber for a horse of a stated height plus 30 soldiers in bronze armor.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "mosasaurus": {
+    "name": "mosasaurus",
+    "plural": "mosasauruses",
+    "article": "a",
+    "lb": 30000,
+    "familiarity": "obscure",
+    "category": "prehistoric",
+    "certainty": "Estimate for a large Mosasaurus hoffmannii, about 15 US tons. Published estimates vary by roughly 2x.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "dodo": {
+    "name": "dodo",
+    "plural": "dodos",
+    "article": "a",
+    "lb": 30,
+    "familiarity": "obscure",
+    "category": "animal",
+    "certainty": "Estimate; published figures run from about 23 to 39 lb.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "gigantopithecus": {
+    "name": "Gigantopithecus",
+    "plural": "Gigantopithecus",
+    "article": "a",
+    "lb": 550,
+    "familiarity": "obscure",
+    "category": "prehistoric",
+    "certainty": "Estimate from teeth and jaws only; published figures run from about 440 to 660 lb.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "chicken-heart": {
+    "name": "chicken heart",
+    "plural": "chicken hearts",
+    "article": "a",
+    "lb": 0.018,
+    "familiarity": "everyday",
+    "category": "food",
+    "certainty": "About 8 grams. Varies with the bird, so the pair's answer is loose.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "boeing-747": {
+    "name": "fully loaded Boeing 747",
+    "plural": "fully loaded Boeing 747s",
+    "article": "a",
+    "lb": 875000,
+    "familiarity": "everyday",
+    "category": "vehicle",
+    "certainty": "Maximum takeoff weight of a 747-400. Empty it is about 400,000 lb.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
+  },
+  "hummingbird": {
+    "name": "hummingbird",
+    "plural": "hummingbirds",
+    "article": "a",
+    "lb": 0.008,
+    "familiarity": "everyday",
+    "category": "animal",
+    "certainty": "Ruby-throated hummingbird, about 3.5 grams.",
+    "source": "TODO verify: drafted from memory, not yet checked against a source."
   }
 }
