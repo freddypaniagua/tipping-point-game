@@ -1,8 +1,8 @@
 import "./style.css";
 import { createGuessInput } from "./input";
+import { MAX_POINTS_PER_ROUND, rating, recordRound, shareText, tiltDegrees, totalPoints, type RoundResult } from "./results";
 import { createScale } from "./scale";
-import { score } from "./scoring";
-import { WEIGHINS, displayAnswer } from "./weighin";
+import { WEIGHINS } from "./weighin";
 
 const $ = <T extends Element>(sel: string) => document.querySelector<T>(sel)!;
 
@@ -18,6 +18,7 @@ const scale = createScale($<SVGSVGElement>("#scale"), WEIGHINS[0]);
 
 let index = 0; // which of today's weigh-ins is on the scale
 let committed = false;
+const rounds: RoundResult[] = []; // one entry per finished weigh-in, in play order
 
 /** Put weigh-in `i` on the scale and hand the controls back to the player. */
 function show(i: number) {
@@ -54,16 +55,79 @@ controls.addEventListener("submit", async (e) => {
 
   // Only now, after the beam has settled, do we reveal the real count.
   // Score against the number we display, so players can check the math themselves.
-  const answer = displayAnswer(weighin);
-  const result = score(guess, answer);
-  $("#answer").textContent = answer.toLocaleString();
-  $("#result").textContent = `You said ${guess.toLocaleString()} · ${result.label} · ${result.points} points`;
+  const round = recordRound(weighin, guess);
+  rounds.push(round);
+  $("#answer").textContent = round.answer.toLocaleString();
+  $("#result").textContent = `You said ${guess.toLocaleString()} · ${round.band.label} · ${round.band.points} points`;
   $("#fact").textContent = weighin.funFact;
-  next.hidden = index + 1 >= WEIGHINS.length; // the results screen will take over after the last one
+  next.textContent = isLast() ? "See your results" : "Next weigh-in";
+  next.hidden = false;
   reveal.hidden = false;
 });
 
-next.addEventListener("click", () => show(index + 1));
+const isLast = () => index + 1 >= WEIGHINS.length;
+next.addEventListener("click", () => (isLast() ? showResults() : show(index + 1)));
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/** A tiny beam on a pivot, leaning the way the real scale settled for that round. */
+function tiltIcon(degrees: number): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 40 28");
+  svg.setAttribute("class", "tilt");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML =
+    `<path d="M20 14 L14 26 H26 Z" fill="#8c6a2f" />` +
+    `<g transform="rotate(${degrees.toFixed(1)} 20 14)">` +
+    `<path d="M4 14 H36" stroke="#c79a3b" stroke-width="4" stroke-linecap="round" />` +
+    `<circle cx="5" cy="14" r="3.5" fill="#8c6a2f" /><circle cx="35" cy="14" r="3.5" fill="#8c6a2f" /></g>`;
+  return svg;
+}
+
+const el = (tag: string, className: string, text: string) => {
+  const node = document.createElement(tag);
+  node.className = className;
+  node.textContent = text;
+  return node;
+};
+
+/** Swap the scale for the end-of-day summary. */
+function showResults() {
+  $<HTMLElement>("#play").hidden = true;
+  $("#progress").textContent = "Today's results";
+  $("h1").textContent = "Your weigh-ins";
+  $("#total").textContent = String(totalPoints(rounds));
+  $("#total-max").textContent = `of ${rounds.length * MAX_POINTS_PER_ROUND}`;
+  $("#rating").textContent = rating(rounds);
+
+  $("#rounds").replaceChildren(
+    ...rounds.map((r) => {
+      const { anchor, counter } = r.weighin;
+      const title = `${anchor.name[0].toUpperCase()}${anchor.name.slice(1)} vs ${counter.plural}`;
+      const detail = `You said ${r.guess.toLocaleString()} · It takes about ${r.answer.toLocaleString()}`;
+      const text = el("div", "round-text", "");
+      text.append(el("p", "round-title", title), el("p", "round-detail", detail));
+      const li = el("li", "round", "");
+      li.append(tiltIcon(tiltDegrees(r)), text, el("span", "round-points", String(r.band.points)));
+      return li;
+    }),
+  );
+
+  $("#share-text").textContent = shareText(rounds);
+  $<HTMLElement>("#results").hidden = false;
+
+}
+
+const share = $<HTMLButtonElement>("#share");
+share.addEventListener("click", async () => {
+  // Clipboard access can be refused (older browsers, non-HTTPS); the text is on screen either way.
+  try {
+    await navigator.clipboard.writeText(shareText(rounds));
+    share.textContent = "Copied";
+  } catch {
+    share.textContent = "Copy the text below";
+  }
+});
 
 show(0);
 

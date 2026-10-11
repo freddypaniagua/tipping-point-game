@@ -12,6 +12,7 @@
         <h1>How many <span id="counter-name">blue whales</span> balance <span id="anchor-name">the Eiffel Tower</span>?</h1>
       </header>
 
+      <div id="play">
       <svg id="scale" viewBox="0 0 400 330" role="img" aria-label="A balance scale with the Eiffel Tower on the left pan">
         <defs>
           <!-- Object art. Each symbol sits on the bottom of whatever box it is drawn in (YMax),
@@ -69,6 +70,16 @@
         <p id="result" class="result"></p>
         <p id="fact" class="fact"></p>
         <button type="button" id="next" class="commit next" hidden>Next weigh-in</button>
+      </section>
+      </div>
+
+      <!-- End of the day: total, rating, a recap of all five rounds and the share button. -->
+      <section id="results" class="results" hidden>
+        <p class="total"><strong id="total"></strong> <span id="total-max"></span></p>
+        <p id="rating" class="rating"></p>
+        <ol id="rounds" class="rounds"></ol>
+        <button type="button" id="share" class="commit">Copy results</button>
+        <pre id="share-text" class="share-text"></pre>
       </section>
 
       <button type="button" id="reset" class="dev" hidden>Reset (dev only)</button>
