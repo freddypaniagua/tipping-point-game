@@ -3,7 +3,7 @@
 // vs hybrid), so this is isolated behind a tiny interface that main.ts depends on.
 
 /** Largest guess the input accepts; answers must stay under this. */
-export const MAX_GUESS = 100_000;
+export const MAX_GUESS = 1_000_000_000;
 
 /** 1, 2, 3, 5, 10, 20, 30, 50, 100, ... up to MAX_GUESS. */
 const SNAPS: number[] = [];

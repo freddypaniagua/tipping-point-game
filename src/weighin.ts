@@ -60,7 +60,14 @@ export function exactAnswer(w: Weighin): number {
   return w.anchor.lb / w.counter.lb;
 }
 
-/** The clean number shown in the reveal. */
+/**
+ * The clean number shown in the reveal: a whole number, kept to two significant figures
+ * once it reaches 100 ("about 31,000", not "30,556"). The weights behind big answers are
+ * estimates, so more digits would claim precision we don't have.
+ */
 export function displayAnswer(w: Weighin): number {
-  return Math.round(exactAnswer(w));
+  const exact = exactAnswer(w);
+  if (exact < 100) return Math.round(exact);
+  const step = 10 ** (Math.floor(Math.log10(exact)) - 1);
+  return Math.round(exact / step) * step;
 }

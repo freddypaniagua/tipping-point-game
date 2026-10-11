@@ -22,6 +22,16 @@ describe("buildWeighins", () => {
     expect(displayAnswer(w)).toBe(4);
   });
 
+  it("keeps big answers to two significant figures", () => {
+    const objects = { ape: obj("ape", 550), heart: obj("heart", 0.018), whale: obj("whale", 330000) };
+    const [big, small] = buildWeighins(objects, [
+      { anchor: "ape", counter: "heart", funFact: "" }, // 30,555.6
+      { anchor: "whale", counter: "ape", funFact: "" }, // 600 exactly
+    ]);
+    expect(displayAnswer(big)).toBe(31_000);
+    expect(displayAnswer(small)).toBe(600);
+  });
+
   it("throws on an id that isn't in the database", () => {
     expect(() => buildWeighins(objects, [{ anchor: "car", counter: "hrose", funFact: "" }])).toThrow(/hrose/);
   });
