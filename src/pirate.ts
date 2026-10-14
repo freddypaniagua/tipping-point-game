@@ -44,7 +44,7 @@ function node(tag: string, attrs: Record<string, string | number>): SVGElement {
 export interface Pirate {
   /** Type `text` into the speech bubble while the mouth moves. Resolves when he has finished. */
   say(text: string): Promise<void>;
-  /** Walk in from just past the left edge of the window to his spot. Resolves when he arrives. */
+  /** Walk in from just past the right edge of the window to his spot. Resolves when he arrives. */
   walkIn(): Promise<void>;
   /** Crouch, jump and land on his spot (cutting short a walk still under way). */
   hop(): Promise<void>;
@@ -56,7 +56,7 @@ const BLINK_MS = 140;
 
 // Motion, in sprite pixels and milliseconds.
 const WALK_SPEED = 150; // px per second
-const MAX_WALK = 260; // on very wide windows he starts nearer than the edge
+const MAX_WALK_MS = 2600; // on very wide windows he walks faster rather than for longer
 const STEP_MS = 190; // one footfall
 const STEP_HEIGHT = 2; // bob per step
 const STEP_LIFT = 2; // how high a boot comes off the dock
@@ -121,12 +121,13 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
     pose.setAttribute("transform", t);
     if (!rig) return;
 
-    // Each stride is one footstep; the boots take turns, each rising and moving a pixel forward.
+    // Each stride is one footstep; the boots take turns, each rising and moving a pixel forward
+    // (to the left, the way he faces).
     const step = Math.floor(at.stride), into = at.stride - step;
     const lift = at.walking ? Math.round(STEP_LIFT * Math.sin(into * Math.PI)) : 0;
     rig.boots.forEach((boot, i) => {
       const moving = lift > 0 && step % 2 === i;
-      boot.setAttribute("transform", moving ? `translate(1 ${-lift})` : "");
+      boot.setAttribute("transform", moving ? `translate(-1 ${-lift})` : "");
     });
     // Arms swing against the legs, like anyone walking.
     const swing = at.walking ? ARM_SWING * Math.sin(at.stride * Math.PI) : 0;
@@ -198,12 +199,12 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
     async walkIn() {
       if (reducedMotion) return;
       await ready; // so he arrives with his arms and legs already moving
-      // Start with his right edge just past the window's left edge. `fit` maps sprite pixels to
-      // the screen, so its matrix says where pixel 0 is (e) and how big one pixel is (a).
+      // He faces left, so he comes in from the right (passing behind the barrel), starting with
+      // his left edge just past the window's right edge. `fit` maps sprite pixels to the screen,
+      // so its matrix says where pixel 0 is (e) and how big one pixel is (a).
       const ctm = fit.getScreenCTM();
-      const offscreen = ctm ? -ctm.e / ctm.a - SPRITE.w - 2 : -SPRITE.w;
-      const from = Math.max(-MAX_WALK, Math.min(-SPRITE.w, offscreen));
-      const ms = (-from / WALK_SPEED) * 1000;
+      const from = ctm ? Math.max(SPRITE.w, (window.innerWidth - ctm.e) / ctm.a + 2) : SPRITE.w * 2;
+      const ms = Math.min(MAX_WALK_MS, (from / WALK_SPEED) * 1000);
       const steps = Math.max(2, Math.round(ms / STEP_MS)); // whole steps, so he ends on the ground
       at.walking = true;
       await tween(ms, (t) => {
