@@ -147,3 +147,7 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Raw generated art (large originals); cleaned-up versions live in src/assets
+art/raw/
+.DS_Store
