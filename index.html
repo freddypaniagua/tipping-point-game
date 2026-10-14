@@ -20,6 +20,18 @@
             <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
             <path d="M4.5 3 H11.5 L13.5 12 H2.5Z" fill="#a8842f" />
           </symbol>
+          <!-- The dock repeats sideways forever, every other copy mirrored so the edges always
+               match. Its sprite is 240 x 127 art pixels at 2.75 units each (660 x 349.25). -->
+          <pattern id="dock" patternUnits="userSpaceOnUse" x="-330" y="97" width="1320" height="349.25">
+            <image href="/src/assets/art/dock.png" width="660" height="349.25" />
+            <image href="/src/assets/art/dock.png" width="660" height="349.25" transform="translate(1320 0) scale(-1 1)" />
+          </pattern>
+          <!-- Below it, just the planks (art rows 40 to 127) repeat downward too, so tall windows
+               never run out of dock. The tile clips everything outside it. -->
+          <pattern id="dock-planks" patternUnits="userSpaceOnUse" x="-330" y="446.25" width="1320" height="239.25">
+            <image href="/src/assets/art/dock.png" y="-110" width="660" height="349.25" />
+            <image href="/src/assets/art/dock.png" y="-110" width="660" height="349.25" transform="translate(1320 0) scale(-1 1)" />
+          </pattern>
         </defs>
 
         <!-- The dock, back to front. Every piece is its own image so each can move by itself
@@ -45,12 +57,9 @@
             <rect class="sparkle" x="-30" y="60" width="12" height="2" style="animation-delay: -1.6s" /><rect class="sparkle" x="390" y="30" width="10" height="2" style="animation-delay: -2.6s" />
           </g>
         </g>
-        <!-- The dock everything stands on, repeated with every other copy mirrored so the edges
-             always match. The plain strip behind it covers anything wider or lower still. -->
-        <rect x="-3000" y="125" width="6400" height="1400" fill="#6e4422" />
-        <image href="/src/assets/art/dock.png" x="-1532.5" y="97" width="1155" transform="translate(-1910 0) scale(-1 1)" />
-        <image href="/src/assets/art/dock.png" x="-377.5" y="97" width="1155" />
-        <image href="/src/assets/art/dock.png" x="777.5" y="97" width="1155" transform="translate(2710 0) scale(-1 1)" />
+        <!-- The dock everything stands on (patterns in <defs> above). -->
+        <rect x="-3000" y="97" width="6400" height="349.25" fill="url(#dock)" />
+        <rect x="-3000" y="446.25" width="6400" height="1100" fill="url(#dock-planks)" />
 
         <!-- The pirate stands to the left of the barrel, so the scale has clear sea and sky
              behind it. This is his sprite's top-left corner; pirate.ts draws him at one art

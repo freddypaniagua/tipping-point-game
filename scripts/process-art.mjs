@@ -52,7 +52,9 @@ const JOBS = [
   { name: "scene/clouds", out: "cloud-4", crop: [0.75, 0.2, 1.0, 0.8], px: 40 },
   { name: "scene/sea", out: "sea", key: false, crop: [0, 0.41, 1, 0.7], px: 248 },
   { name: "scene/town", out: "town", px: 64 },
-  { name: "scene/dock", out: "dock", px: 420 },
+  // Generated at its own pixel size (about 5.7 raw pixels per art pixel), which is already the
+  // pirate's grid, so no shrinking: it repeats sideways as a pattern (index.html).
+  { name: "scene/dock", out: "dock", block: 5.73 },
   { name: "props/barrel", out: "barrel", px: 44 },
   { name: "props/scale-parts", out: "scale-stand", crop: [0.0, 0.03, 0.2, 0.97], px: 20 },
   { name: "props/scale-parts", out: "scale-beam", crop: [0.2, 0.36, 0.72, 0.62], px: 84 },

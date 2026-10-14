@@ -24,7 +24,7 @@ used as it is (with bigger pixels) until it is redrawn.
 | `scene/clouds` | Four clouds in a row, spaced evenly across the image | about 40 x 25 each | magenta |
 | `scene/sea` | Sea strip | 248 wide | none (fills the image) |
 | `scene/town` | Distant harbour town | 64 x 20 | magenta |
-| `scene/dock` | The dock everything stands on (repeated across wide windows). Tall enough to reach the bottom of the window. | 420 x 220 | magenta above the dock |
+| `scene/dock` | The dock everything stands on. Done at 2x (generated with Nano Banana Pro). It repeats sideways, and its planks repeat downward, so any width works. | 240 x 127 | magenta above the dock |
 | `props/barrel` | Barrel the scale sits on | 44 x 62 | magenta |
 | `props/scale-parts` | Stand, beam and one pan, laid out separately | stand 20 x 58, beam 84 x 12, pan 28 x 42 | magenta |
 | `objects/horse` | **Missing.** Uses the Trojan Horse without wheels until added. | 32 max | magenta |
