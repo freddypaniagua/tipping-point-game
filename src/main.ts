@@ -171,15 +171,23 @@ share.addEventListener("click", async () => {
 // Welcome screen. The premise is a true story: in the 1790s British privateers captured the ship
 // carrying the copper kilogram France had sent to Thomas Jefferson (NIST, "Pirates of the
 // Caribbean: Metric Edition"), which is why this game weighs everything in pounds.
-void pirate.say("We took the kilogram France sent to Jefferson. So on my dock, everything gets weighed in pounds.");
-
-requestAnimationFrame(aimBubble);
+// He walks on first and speaks once he has arrived; the bubble stays hidden until then.
+let started = false;
+question.style.visibility = "hidden";
+void pirate.walkIn().then(() => {
+  if (started) return; // the player didn't wait for him
+  aimBubble();
+  question.style.visibility = "";
+  void pirate.say("We took the kilogram France sent to Jefferson. So on my dock, everything gets weighed in pounds.");
+});
 
 $<HTMLButtonElement>("#start").addEventListener("click", async () => {
+  started = true;
   document.querySelectorAll<HTMLElement>("[data-welcome]").forEach((part) => (part.hidden = true));
   void pirate.say(""); // stop the welcome line if it is still typing
   question.style.visibility = "hidden"; // nothing to say while the camera moves
-  await pan(stage, WIDE, CLOSE);
+  // He hops as the player steps up: a greeting, before any guess, so it gives nothing away.
+  await Promise.all([pirate.hop(), pan(stage, WIDE, CLOSE)]);
   aimBubble();
   question.style.visibility = "";
   $<HTMLElement>("#progress").hidden = false;
