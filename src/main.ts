@@ -1,6 +1,8 @@
 import "./style.css";
+import { CLOSE, WIDE, pan } from "./camera";
 import { SAMPLE_STATS, loadCrowd, percentBeaten, type CrowdStats } from "./crowd";
 import { createGuessInput } from "./input";
+import { createPirate } from "./pirate";
 import { MAX_POINTS_PER_ROUND, rating, recordRound, shareText, tiltDegrees, totalPoints, type RoundResult } from "./results";
 import { createScale } from "./scale";
 import { WEIGHINS } from "./weighin";
@@ -15,7 +17,22 @@ const next = $<HTMLButtonElement>("#next");
 const reset = $<HTMLButtonElement>("#reset");
 
 const input = createGuessInput(controls);
-const scale = createScale($<SVGSVGElement>("#scale"), WEIGHINS[0]);
+const stage = $<SVGSVGElement>("#scale");
+const scale = createScale(stage, WEIGHINS[0]);
+
+const question = $<HTMLElement>("#question");
+const pirateArt = $<SVGGElement>("#pirate");
+const pirate = createPirate(pirateArt, question);
+
+/** Point the speech bubble's tail at the pirate's head, wherever the window puts him. */
+function aimBubble() {
+  const head = pirateArt.getBoundingClientRect();
+  const box = question.getBoundingClientRect();
+  if (box.width === 0) return; // hidden
+  const x = head.left + head.width * 0.55 - box.left; // his face sits a little right of centre
+  question.style.setProperty("--tail-x", `${Math.min(box.width - 16, Math.max(16, x))}px`);
+}
+window.addEventListener("resize", aimBubble);
 
 let index = 0; // which of today's weigh-ins is on the scale
 let committed = false;
@@ -28,8 +45,7 @@ function show(i: number) {
   const { anchor, counter } = WEIGHINS[i];
 
   $("#progress").textContent = `Weigh-in ${i + 1} of ${WEIGHINS.length}`;
-  $("#counter-name").textContent = counter.plural;
-  $("#anchor-name").textContent = `${anchor.article} ${anchor.name}`;
+  void pirate.say(`How many ${counter.plural} balance ${anchor.article} ${anchor.name}?`);
   readout.textContent = " "; // non-breaking space keeps the line's height while empty
   reveal.hidden = true;
   next.hidden = true;
@@ -37,6 +53,7 @@ function show(i: number) {
   scale.load(WEIGHINS[i]);
   input.reset();
   input.setEnabled(true);
+  controls.hidden = false;
   commit.disabled = false;
 }
 
@@ -63,6 +80,7 @@ controls.addEventListener("submit", async (e) => {
   $("#fact").textContent = weighin.funFact;
   next.textContent = isLast() ? "See your results" : "Next weigh-in";
   next.hidden = false;
+  controls.hidden = true; // the guess is spent; the reveal takes its place
   reveal.hidden = false;
 });
 
@@ -96,7 +114,10 @@ const el = (tag: string, className: string, text: string) => {
 function showResults() {
   $<HTMLElement>("#play").hidden = true;
   $("#progress").textContent = "Today's results";
-  $("h1").textContent = "Your weigh-ins";
+  void pirate.say(""); // stop any line still typing before the bubble becomes a heading
+  question.classList.remove("bubble");
+  question.removeAttribute("aria-label");
+  question.textContent = "Your weigh-ins";
   $("#total").textContent = String(totalPoints(rounds));
   $("#total-max").textContent = `of ${rounds.length * MAX_POINTS_PER_ROUND}`;
   $("#rating").textContent = rating(rounds);
@@ -147,7 +168,24 @@ share.addEventListener("click", async () => {
   }
 });
 
-show(0);
+// Welcome screen. The premise is a true story: in the 1790s British privateers captured the ship
+// carrying the copper kilogram France had sent to Thomas Jefferson (NIST, "Pirates of the
+// Caribbean: Metric Edition"), which is why this game weighs everything in pounds.
+void pirate.say("We took the kilogram France sent to Jefferson. So on my dock, everything gets weighed in pounds.");
+
+requestAnimationFrame(aimBubble);
+
+$<HTMLButtonElement>("#start").addEventListener("click", async () => {
+  document.querySelectorAll<HTMLElement>("[data-welcome]").forEach((part) => (part.hidden = true));
+  void pirate.say(""); // stop the welcome line if it is still typing
+  question.style.visibility = "hidden"; // nothing to say while the camera moves
+  await pan(stage, WIDE, CLOSE);
+  aimBubble();
+  question.style.visibility = "";
+  $<HTMLElement>("#progress").hidden = false;
+  $<HTMLElement>("#play").hidden = false;
+  show(0);
+});
 
 // Dev convenience so the animation can be replayed while tuning. Not part of the game
 // (the real game is one shot per weigh-in), and stripped from production builds.

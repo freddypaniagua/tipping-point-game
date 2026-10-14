@@ -4,28 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Tipping Point</title>
+    <!-- Pixel display font for titles, the speech bubble and buttons. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" />
   </head>
   <body>
-    <main class="game">
-      <header>
-        <p id="progress" class="eyebrow">Weigh-in 1 of 5</p>
-        <h1>How many <span id="counter-name">blue whales</span> balance <span id="anchor-name">the Eiffel Tower</span>?</h1>
-      </header>
-
-      <div id="play">
-      <svg id="scale" viewBox="0 0 400 330" role="img" aria-label="A balance scale with the Eiffel Tower on the left pan">
+    <!-- The stage fills the whole window, behind the interface: the dock scene, the pirate, the
+         barrel and the scale in one drawing. The viewBox is the camera (camera.ts): it is always
+         shown in full, and the scenery runs on past its edges to fill whatever shape the window is. -->
+    <svg id="scale" class="stage" viewBox="-100 -520 600 1100" role="img" aria-label="A balance scale">
         <defs>
-          <!-- Object art. Each symbol sits on the bottom of whatever box it is drawn in (YMax),
-               so the same art works as the big anchor and as a small sprite in the pile. -->
-          <symbol id="whale" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
-            <path d="M1 7 C1 3 6 1 10 3 C12 4 13 5 15 3 L15.5 1.5 L15 6 C13.5 8 11 9.5 7 9.5 C3 9.5 1 8.5 1 7Z" fill="#4f7ea8" />
-            <circle cx="4" cy="5.6" r=".7" fill="#12202e" />
-          </symbol>
-          <symbol id="tower" viewBox="0 0 60 100" preserveAspectRatio="xMidYMax meet" overflow="visible">
-            <path d="M30 0 L33 22 L38 40 L48 82 L60 100 L48 100 L41 86 L30 80 L19 86 L12 100 L0 100 L12 82 L22 40 L27 22Z" fill="#6b5a4a" />
-            <rect x="21" y="38" width="18" height="3" fill="#8a7762" />
-            <rect x="12" y="80" width="36" height="3" fill="#8a7762" />
-          </symbol>
           <!-- Fallback for objects without art yet: a plain brass weight. -->
           <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
@@ -33,26 +22,86 @@
           </symbol>
         </defs>
 
-        <!-- stand -->
-        <path d="M200 110 L200 295 M150 300 L250 300" stroke="#8c6a2f" stroke-width="8" stroke-linecap="round" />
-        <circle cx="200" cy="110" r="9" fill="#c79a3b" />
+        <!-- The dock, back to front. Every piece is its own image so each can move by itself
+             (style.css); sizes are in the same units as the scale.
+             Widths are in units, sized so every sprite shares one pixel grid: at the current art one
+             pixel is 5.5 units, and art drawn at twice the detail (art/README.md) lands at 2.75. -->
+        <image href="/src/assets/art/sky.png" x="-1400" y="-1300" width="3200" height="1500" preserveAspectRatio="none" />
+        <image class="cloud" href="/src/assets/art/cloud-1.png" y="-190" width="110" style="animation-duration: 150s; animation-delay: -20s" />
+        <image class="cloud" href="/src/assets/art/cloud-2.png" y="-110" width="110" style="animation-duration: 110s; animation-delay: -70s" />
+        <image class="cloud" href="/src/assets/art/cloud-3.png" y="-150" width="110" style="animation-duration: 130s; animation-delay: -100s" />
+        <image class="cloud" href="/src/assets/art/cloud-4.png" y="-80" width="110" style="animation-duration: 95s; animation-delay: -45s" />
+        <image href="/src/assets/art/town.png" x="470" y="-62" width="176" />
+        <g class="sea">
+          <!-- Every other tile is mirrored, so neighbouring edges always match. -->
+          <image href="/src/assets/art/sea.png" x="-1504" y="-22" width="682" />
+          <image href="/src/assets/art/sea.png" x="-822" y="-22" width="682" transform="translate(-962 0) scale(-1 1)" />
+          <image href="/src/assets/art/sea.png" x="-140" y="-22" width="682" />
+          <image href="/src/assets/art/sea.png" x="542" y="-22" width="682" transform="translate(1766 0) scale(-1 1)" />
+          <image href="/src/assets/art/sea.png" x="1224" y="-22" width="682" />
+          <g fill="#bfe6f0">
+            <rect class="sparkle" x="20" y="6" width="14" height="2" /><rect class="sparkle" x="118" y="38" width="10" height="2" style="animation-delay: -1.1s" />
+            <rect class="sparkle" x="262" y="14" width="12" height="2" style="animation-delay: -2s" /><rect class="sparkle" x="330" y="52" width="16" height="2" style="animation-delay: -.6s" />
+            <rect class="sparkle" x="-30" y="60" width="12" height="2" style="animation-delay: -1.6s" /><rect class="sparkle" x="390" y="30" width="10" height="2" style="animation-delay: -2.6s" />
+          </g>
+        </g>
+        <!-- The dock everything stands on, repeated with every other copy mirrored so the edges
+             always match. The plain strip behind it covers anything wider or lower still. -->
+        <rect x="-3000" y="125" width="6400" height="1400" fill="#6e4422" />
+        <image href="/src/assets/art/dock.png" x="-1532.5" y="97" width="1155" transform="translate(-1910 0) scale(-1 1)" />
+        <image href="/src/assets/art/dock.png" x="-377.5" y="97" width="1155" />
+        <image href="/src/assets/art/dock.png" x="777.5" y="97" width="1155" transform="translate(2710 0) scale(-1 1)" />
+
+        <!-- The pirate stands to the left of the barrel, so the scale has clear sea and sky
+             behind it. This is his sprite's top-left corner; pirate.ts draws him at one art
+             pixel = 2.75 units, so his boots rest at y 250. -->
+        <g id="pirate" transform="translate(-135 -88)"></g>
+
+        <!-- The barrel, nearer the camera than the pirate. The scale sits on its lid. -->
+        <image href="/src/assets/art/barrel.png" x="199.5" y="205" width="121" />
+
+        <!-- The scale itself, shrunk and moved so its base (200, 300) rests on the barrel lid.
+             Its sizes are in its own units (one unit here is 0.75 of a scene unit). -->
+        <g id="rig" transform="translate(260 217) scale(0.75) translate(-200 -300)">
+        <image href="/src/assets/art/scale-stand.png" x="163.33" y="87.3" width="73.33" />
 
         <!-- beam + needle rotate about the pivot -->
-        <g id="beam"><rect x="60" y="106" width="280" height="8" rx="4" fill="#c79a3b" /></g>
-        <g id="needle"><path d="M200 110 L200 70" stroke="#6e5420" stroke-width="3" stroke-linecap="round" /></g>
+        <g id="needle"><path d="M200 110 L200 70" stroke="#1f1a17" stroke-width="5" stroke-linecap="square" /><path d="M200 110 L200 72" stroke="#e0a52e" stroke-width="2" /></g>
+        <g id="beam"><image href="/src/assets/art/scale-beam.png" x="46" y="88" width="308" /></g>
 
-        <!-- pans hang from the beam ends and stay level -->
+        <!-- pans hang from the beam ends and stay level; objects stand on the plate -->
         <g id="pan-left">
-          <path d="M0 0 L-52 108 M0 0 L52 108" stroke="#8c6a2f" stroke-width="1.5" />
-          <use id="anchor-art" href="#tower" x="-28" y="12" width="56" height="96" />
-          <path d="M-58 108 H58 Q52 126 0 126 Q-52 126 -58 108Z" fill="#c79a3b" />
+          <image href="/src/assets/art/scale-pan.png" x="-51.33" y="-4" width="102.67" />
+          <g id="anchor-art" transform="translate(-58.67 14.7)"></g>
         </g>
         <g id="pan-right">
-          <path d="M0 0 L-52 108 M0 0 L52 108" stroke="#8c6a2f" stroke-width="1.5" />
-          <g id="pile" transform="translate(0 108)"></g>
-          <path d="M-58 108 H58 Q52 126 0 126 Q-52 126 -58 108Z" fill="#c79a3b" />
+          <image href="/src/assets/art/scale-pan.png" x="-51.33" y="-4" width="102.67" />
+          <g id="pile" transform="translate(0 130)"></g>
+        </g>
         </g>
       </svg>
+
+    <main class="game">
+      <!-- Welcome screen, part 1: the name. Hidden once the game starts. -->
+      <div class="welcome" data-welcome>
+        <p class="title">Tipping Point</p>
+        <p class="tagline">The daily weigh-in</p>
+      </div>
+
+      <header>
+        <p id="progress" class="eyebrow" hidden></p>
+        <!-- The pirate's speech bubble; a plain heading on the results screen. -->
+        <h1 id="question" class="bubble"></h1>
+      </header>
+
+
+      <!-- Welcome screen, part 2: the rules and the one button. -->
+      <div class="welcome panel" data-welcome>
+        <p class="rules">5 weigh-ins · one shot each · the closer your guess, the more level the scale</p>
+        <button type="button" id="start" class="commit">Step up to the scale</button>
+      </div>
+
+      <div id="play" class="panel" hidden>
 
       <p id="count-readout" class="readout" aria-live="off">&nbsp;</p>
 
@@ -74,7 +123,7 @@
       </div>
 
       <!-- End of the day: total, rating, a recap of all five rounds and the share button. -->
-      <section id="results" class="results" hidden>
+      <section id="results" class="results panel" hidden>
         <p class="total"><strong id="total"></strong> <span id="total-max"></span></p>
         <p id="rating" class="rating"></p>
         <!-- Filled in only when the stats server answers (see crowd.ts). -->
