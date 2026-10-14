@@ -19,7 +19,10 @@ backdrop and writes the sprite to `src/assets/art/`. This skill covers the first
    `/plugin marketplace add AgriciDaniel/banana-claude`, `/plugin install
    banana-claude@banana-claude-marketplace`, `/plugin enable banana-claude@banana-claude-marketplace`,
    `/reload-plugins`.
-3. Generation is paid per image. Show the plan and estimate and let the user approve each
+3. Use Nano Banana Pro (`gemini-3-pro-image`) when the pirate is the reference: it is the only
+   route with a real `style` reference slot. The reference's authority must be confirmed by
+   the user (they confirmed rights and sending it to Google on 2026-10-14).
+4. Generation is paid per image. Show the plan and estimate and let the user approve each
    request (the plugin enforces this). Use the cheapest route that the user is happy with for
    drafts, and say which model you chose.
 
@@ -46,6 +49,11 @@ all-brown colour schemes.
 2. Save the result as `art/raw/<folder>/<name>.png`, the exact name in the README table.
 3. Run `npm run art`. If the sprite comes out blurry or the wrong size, set `block` for that
    job in `scripts/process-art.mjs` (see "If a new image comes out wrong" in the README).
+   The generator picks its own pixel size rather than the one asked for (the dock came back at
+   about 5.7 raw pixels per art pixel, 240 wide instead of 420), and the auto-detect can be
+   fooled; measure the smallest blocks in a zoomed crop and use a fractional `block` if needed.
+   What must match is the pixel size, not the requested dimensions: repeating pieces can simply
+   tile more, single sprites may need `px`/`max` or a regenerate.
 4. Look at the output in `src/assets/art/` and in the running game (`npm run dev`) before
    calling it done. If the pirate changed, re-measure `MOUTH`, `EYES` and the rig parts
    (`SWORD`, `HAND`, `BOOTS`) at the top of `src/pirate.ts`.
