@@ -14,10 +14,26 @@ const DAMPING = 7;
 const HOLD_AFTER_LAST_DROP_MS = 600; // minimum suspense beat, even if the spring is already still
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const FALLBACK_ICON = "weight"; // plain brass weight for objects that have no art yet
 const SPRITE = { w: 16, h: 12 }; // size of one counterweight in the pile
+const ANCHOR = { w: 117.33, h: 117.33 }; // box the anchor object is fitted into: 16 art pixels square
 
-const iconHref = (icon?: string) => `#${icon ?? FALLBACK_ICON}`;
+// Every sprite in assets/art/objects, keyed by file name. Vite turns each into a hashed URL.
+const SPRITES = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>("./assets/art/objects/*.png", { eager: true, query: "?url", import: "default" }),
+  ).map(([path, url]) => [path.split("/").pop()!.replace(".png", ""), url]),
+);
+
+/** Draw an object inside a box, standing on the box's bottom edge. No sprite yet: a plain brass weight. */
+function objectArt(icon: string | undefined, width: number, height: number): SVGElement {
+  const url = icon ? SPRITES[icon] : undefined;
+  const art = document.createElementNS(SVG_NS, url ? "image" : "use");
+  art.setAttribute("href", url ?? "#weight");
+  art.setAttribute("width", String(width));
+  art.setAttribute("height", String(height));
+  if (url) art.setAttribute("preserveAspectRatio", "xMidYMax meet");
+  return art;
+}
 
 /** Beam angle when `count` counterweights sit on the right pan. Depends only on real weights. */
 function angleFor(w: Weighin, count: number): number {
@@ -40,7 +56,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   const rightPan = svg.querySelector<SVGGElement>("#pan-right")!;
   const pile = svg.querySelector<SVGGElement>("#pile")!;
   const needle = svg.querySelector<SVGGElement>("#needle")!;
-  const anchorArt = svg.querySelector<SVGUseElement>("#anchor-art")!;
+  const anchorArt = svg.querySelector<SVGGElement>("#anchor-art")!;
 
   let w = first;
   let angle = 0;
@@ -50,7 +66,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   function load(next: Weighin) {
     w = next;
     pile.replaceChildren();
-    anchorArt.setAttribute("href", iconHref(w.anchor.icon));
+    anchorArt.replaceChildren(objectArt(w.anchor.icon, ANCHOR.w, ANCHOR.h));
     svg.setAttribute("aria-label", `A balance scale with ${w.anchor.article} ${w.anchor.name} on the left pan`);
     angle = angleFor(w, 0);
     velocity = 0;
@@ -75,11 +91,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
     g.setAttribute("transform", `translate(${-39 + col * 15.5} ${-16 - row * 13})`);
     const pop = document.createElementNS(SVG_NS, "g");
     pop.setAttribute("class", "pop");
-    const use = document.createElementNS(SVG_NS, "use");
-    use.setAttribute("href", iconHref(w.counter.icon));
-    use.setAttribute("width", String(SPRITE.w));
-    use.setAttribute("height", String(SPRITE.h));
-    pop.append(use);
+    pop.append(objectArt(w.counter.icon, SPRITE.w, SPRITE.h));
     g.append(pop);
     pile.append(g);
   }

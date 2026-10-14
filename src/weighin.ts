@@ -17,7 +17,7 @@ export interface WeighObject {
   lb: number;
   familiarity: Familiarity;
   category: string;
-  /** Id of an SVG <symbol> in index.html. Objects without art yet fall back to a plain weight. */
+  /** File name (no extension) of a sprite in assets/art/objects. Without one, a plain weight is drawn. */
   icon?: string;
   /** Internal: how solid the weight is (average, estimate, range...). */
   certainty: string;
