@@ -68,6 +68,8 @@ h1 { margin: 0; font-family: var(--pixel); font-size: 28px; line-height: 1.15; f
 .sea { animation: swell 6s ease-in-out infinite alternate; }
 @keyframes swell { from { transform: translate(-9px, 0); } to { transform: translate(9px, 3px); } }
 .sparkle { animation: twinkle 3.2s ease-in-out infinite; }
+.bob { animation: bob 4s ease-in-out infinite alternate; } /* moored ships rising on the swell */
+@keyframes bob { from { transform: translateY(0); } to { transform: translateY(3px); } }
 @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: .9; } }
 .breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe 2.8s ease-in-out infinite alternate; }
 @keyframes breathe { from { transform: scale(1, 1); } to { transform: scale(1.006, 1.014); } }
@@ -125,5 +127,5 @@ button:disabled, input:disabled { opacity: .5; cursor: default; }
 .dev[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pop, .reveal, .results, .cloud, .sea, .sparkle, .breathe { animation: none; }
+  .pop, .reveal, .results, .cloud, .sea, .sparkle, .bob, .breathe { animation: none; }
 }

@@ -33,6 +33,7 @@ function rawFile(name) {
 }
 
 /**
+ * trim: false keeps the empty border, for layers cut from one picture that must stay aligned.
  * name: raw file, as folder/name without extension. crop: [left, top, right, bottom] as fractions of the raw
  * image, for sheets holding several sprites. erase: a box (same units) to blank out, for a
  * neighbouring sprite that pokes into the crop. key: false keeps the backdrop (sky, sea).
@@ -52,6 +53,12 @@ const JOBS = [
   { name: "scene/clouds", out: "cloud-4", crop: [0.75, 0.2, 1.0, 0.8], px: 40 },
   { name: "scene/sea", out: "sea", key: false, crop: [0, 0.41, 1, 0.7], px: 248 },
   { name: "scene/town", out: "town", px: 64 },
+  // The harbour market (art/raw/reference/market-mood.jpg cut into layers). The market and its
+  // ships come from one picture, so they are left untrimmed and full-frame: drawn at the same
+  // spot, they line up. About 3.4 raw pixels per art pixel, which sits on the pirate's grid.
+  { name: "scene/market", out: "market", block: 3.4, trim: false },
+  { name: "scene/ship-left", out: "ship-left", block: 3.4, trim: false },
+  { name: "scene/ship-right", out: "ship-right", block: 3.4, trim: false },
   // Generated at its own pixel size (about 5.7 raw pixels per art pixel), which is already the
   // pirate's grid, so no shrinking: it repeats sideways as a pattern (index.html).
   { name: "scene/dock", out: "dock", block: 5.73 },
@@ -200,7 +207,7 @@ for (const job of JOBS) {
   for (const [x, y, rgb] of job.paint ?? []) out.set(rgb, (y * w + x) * 4);
 
   let result = sharp(out, { raw: { width: w, height: h, channels: 4 } });
-  if (job.key !== false) result = result.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 0 });
+  if (job.key !== false && job.trim !== false) result = result.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 0 });
   if (job.px || job.max) {
     // Trim first, then shrink, so the target size describes the sprite itself.
     const { data, info: t } = await result.raw().toBuffer({ resolveWithObject: true });
