@@ -28,21 +28,12 @@ used as it is (with bigger pixels) until it is redrawn.
 | (none) | `market-front.png` and `barrel.png`: the two barrels at the market's front right, cut out of `market.png` by `npm run art` and drawn over the pirate so he walks in behind them, and a copy of the left one for the scale to stand on, so it matches. Nothing to generate; if the market changes, check `FRONT` and `SCALE_BARREL` at the end of `scripts/process-art.mjs`. | 633 x 268; barrel 57 x 48 | transparent except the barrels |
 | `scene/dock` | The dock everything stands on. Done at 2x (generated with Nano Banana Pro). It repeats sideways, and its planks repeat downward, so any width works. | 240 x 127 | magenta above the dock |
 | `props/barrel-scale` | One sheet, left to right: a barrel (not used), the scale stand, the beam (level) and one pan. Done in the market's style (generated with Nano Banana Pro). The script swaps the stand's wooden base for a brass foot and lengthens its post. After a change, re-measure the pivot, ring and hook positions in `index.html` and `BEAM_HALF` in `src/scale.ts`. | stand 23 x 70, beam 73 x 9, pan 30 x 49 | magenta |
-| `objects/horse` | **Missing.** Uses the Trojan Horse without wheels until added. | 32 max | magenta |
-| `objects/adult-human` | | 32 max | magenta |
-| `objects/trojan-horse` | | 32 max | magenta |
-| `objects/mosasaurus` | | 32 max | magenta |
-| `objects/dodo` | **Old style, needs redoing.** | 32 max | magenta |
-| `objects/gigantopithecus` | | 32 max | magenta |
-| `objects/chicken-heart` | | 32 max | magenta |
-| `objects/boeing-747` | | 32 max | magenta |
-| `objects/hummingbird` | | 32 max | magenta |
+| `objects/sheet` | All nine weigh-in objects on one 3 x 3 sheet, read row by row: horse, adult human, Trojan Horse; mosasaurus, dodo, Gigantopithecus; chicken heart, Boeing 747, hummingbird. Done in the market's style (Nano Banana Pro). A new object needs a new sheet or its own file and a line in `scripts/process-art.mjs`. | 32 max each | magenta |
 
 When the pirate changes, the mouth and eye positions at the top of `src/pirate.ts` (measured in
 his pixels) need re-measuring, or his talking and blinking patches land in the wrong place.
 
-Object names match the ids in `src/data/objects.json`. A new object needs a line in the list
-near the top of `scripts/process-art.mjs` as well as its image.
+Object names match the ids in `src/data/objects.json`.
 
 Not made yet: a pirate ship for the background (about 96 wide).
 

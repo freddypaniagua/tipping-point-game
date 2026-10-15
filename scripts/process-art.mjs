@@ -66,12 +66,13 @@ const JOBS = [
   { name: "props/barrel-scale", out: "scale-stand", block: 11.4, crop: [0.316, 0.17, 0.463, 0.82], px: 23 },
   { name: "props/barrel-scale", out: "scale-beam", block: 11.4, crop: [0.47, 0.45, 0.79, 0.55] },
   { name: "props/barrel-scale", out: "scale-pan", block: 11.4, crop: [0.795, 0.24, 0.97, 0.73], px: 30 },
-  // Until a plain horse is generated (art/raw/objects/horse), use the Trojan Horse with its wheels cut off.
-  rawFile("objects/horse")
-    ? { name: "objects/horse", block: 15, max: 32 }
-    : { name: "objects/trojan-horse", out: "objects/horse", block: 15, crop: [0.15, 0.25, 0.9, 0.645], max: 32 },
-  ...["adult-human", "trojan-horse", "mosasaurus", "dodo", "gigantopithecus", "chicken-heart", "boeing-747", "hummingbird"].map(
-    (name) => ({ name: `objects/${name}`, block: 15, max: 32 }),
+  // All nine objects on one 3 x 3 sheet in the market's style (Nano Banana Pro), read row by
+  // row. Each crop stays inside its cell, clear of the grid lines the generator drew.
+  ...["horse", "adult-human", "trojan-horse", "mosasaurus", "dodo", "gigantopithecus", "chicken-heart", "boeing-747", "hummingbird"].map(
+    (name, i) => {
+      const [l, t] = [(i % 3) / 3, Math.floor(i / 3) / 3];
+      return { name: "objects/sheet", out: `objects/${name}`, crop: [l + 0.01, t + 0.01, l + 0.323, t + 0.323], max: 32 };
+    },
   ),
 ];
 
