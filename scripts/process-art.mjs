@@ -61,8 +61,8 @@ const JOBS = [
   // pirate's grid, so no shrinking: it repeats sideways as a pattern (index.html).
   { name: "scene/dock", out: "dock", block: 5.73 },
   // One sheet in the market's style (generated with Nano Banana Pro), about 11.4 raw pixels per
-  // art pixel. The beam stays at that size; the rest shrink to fit beside the pirate.
-  { name: "props/barrel-scale", out: "barrel", block: 11.4, crop: [0.022, 0.18, 0.27, 0.81], px: 44 },
+  // art pixel. The beam stays at that size; the rest shrink to fit beside the pirate. Its barrel
+  // isn't used: the scale's barrel is copied from the market (below), so it matches the others.
   { name: "props/barrel-scale", out: "scale-stand", block: 11.4, crop: [0.316, 0.17, 0.463, 0.82], px: 23 },
   { name: "props/barrel-scale", out: "scale-beam", block: 11.4, crop: [0.47, 0.45, 0.79, 0.55] },
   { name: "props/barrel-scale", out: "scale-pan", block: 11.4, crop: [0.795, 0.24, 0.97, 0.73], px: 30 },
@@ -223,24 +223,77 @@ for (const job of JOBS) {
 // The two barrels at the market's bottom right, as their own layer drawn over the pirate so he
 // can walk in behind them. Each barrel is given as a column range and the row its lid starts on.
 // A row of a barrel runs from its first to its last dark outline pixel; near the lid the range
-// is narrower, so the sacks behind it aren't caught.
+// is narrower, so the sacks behind it aren't caught. Each edge is then smoothed (the middle of
+// five rows), so a row whose outline wasn't found, or that caught a plank, follows its neighbours.
+// `rim` gives the first rows by hand, [first, last] column, where the lid's rim is too light to
+// find (read off a zoomed grid of the picture).
 const FRONT = [
-  { x0: 460, x1: 521, top: 221 },
+  {
+    x0: 460, x1: 521, top: 220,
+    rim: [[482, 496], [474, 504], [470, 507], [469, 510], [468, 511], [467, 512], [467, 513], [466, 513]],
+  },
   { x0: 510, x1: 571, top: 210 },
 ];
+/** The scale's barrel is a copy of the first front barrel, so it matches its neighbours. */
+const SCALE_BARREL = { x: 460, w: 57 }; // its columns; it runs from its lid to the picture's bottom
+
 if (existsSync(`${OUT}/market.png`)) {
   const { data, info } = await sharp(`${OUT}/market.png`).raw().toBuffer({ resolveWithObject: true });
   const { width: w, height: h } = info;
-  const dark = (x, y) => data[(y * w + x) * 4 + 3] > 0 && data[(y * w + x) * 4] + data[(y * w + x) * 4 + 1] + data[(y * w + x) * 4 + 2] < 150;
+  const at = (x, y) => (y * w + x) * 4;
+  const dark = (x, y) => data[at(x, y) + 3] > 0 && data[at(x, y)] + data[at(x, y) + 1] + data[at(x, y) + 2] < 150;
+  const median = (v) => [...v].sort((a, b) => a - b)[v.length >> 1];
   const front = Buffer.alloc(w * h * 4); // same size as the market, so it lines up exactly
-  for (const { x0, x1, top } of FRONT) {
-    for (let y = top; y < h; y++) {
+  const spans = FRONT.map(({ x0, x1, top, rim = [] }) => {
+    const found = [...rim];
+    for (let y = top + rim.length; y < h; y++) {
       const [l, r] = y < top + 12 ? [x0 + 3, x1 - 9] : [x0, x1];
       let a = -1, b = -1;
       for (let x = l; x <= r; x++) if (dark(x, y)) (a = a < 0 ? x : a), (b = x);
-      if (a >= 0) data.copy(front, (y * w + a) * 4, (y * w + a) * 4, (y * w + b + 1) * 4);
+      found.push(a < 0 ? null : [a, b]);
     }
-  }
+    return found.map((s, i) => {
+      if (i < rim.length) return s; // given, not found
+      const near = found.slice(Math.max(0, i - 2), i + 3).filter(Boolean);
+      return [median(near.map((s) => s[0])), median(near.map((s) => s[1]))];
+    });
+  });
+  FRONT.forEach(({ top }, n) => {
+    spans[n].forEach(([a, b], i) => data.copy(front, at(a, top + i), at(a, top + i), at(b + 1, top + i)));
+  });
   await sharp(front, { raw: { width: w, height: h, channels: 4 } }).png().toFile(`${OUT}/market-front.png`);
   console.log(`${OUT}/market-front.png  cut from market.png`);
+
+  const { top } = FRONT[0];
+  const barrel = Buffer.alloc(SCALE_BARREL.w * (h - top) * 4);
+  spans[0].forEach(([a, b], i) => {
+    const r = Math.min(b, SCALE_BARREL.x + SCALE_BARREL.w - 1);
+    data.copy(barrel, ((i * SCALE_BARREL.w) + a - SCALE_BARREL.x) * 4, at(a, top + i), at(r + 1, top + i));
+  });
+  await sharp(barrel, { raw: { width: SCALE_BARREL.w, height: h - top, channels: 4 } }).png().toFile(`${OUT}/barrel.png`);
+  console.log(`${OUT}/barrel.png  copied from the market's front barrel`);
+}
+
+// The scale stand stands straight on the barrel lid: its wooden base (drawn at a different angle
+// from the lid) is replaced by a small brass foot, and the post is made longer so the pans hang
+// clear of the barrel. The post is the same in every row, so repeating a row loses nothing.
+const STAND = { postTop: 13, baseTop: 43, post: [10, 13], rows: 70 }; // rows 0-12 are the pivot ball
+if (existsSync(`${OUT}/scale-stand.png`)) {
+  const { data, info } = await sharp(`${OUT}/scale-stand.png`).raw().toBuffer({ resolveWithObject: true });
+  const w = info.width;
+  const out = Buffer.alloc(w * STAND.rows * 4);
+  data.copy(out, 0, 0, STAND.postTop * w * 4); // the ball and finial, unchanged
+  const postRow = data.subarray((STAND.baseTop - 2) * w * 4, (STAND.baseTop - 1) * w * 4);
+  for (let y = STAND.postTop; y < STAND.rows - 3; y++) postRow.copy(out, y * w * 4);
+  // The foot: three rows, light brass on top, dark brass, then outline, wider than the post.
+  const [p0, p1] = STAND.post;
+  const px = (x) => postRow.subarray(x * 4, x * 4 + 4);
+  const [outline, light, shade] = [px(p0), px(p0 + 1), px(p0 + 2)];
+  const paint = (y, from, to, colour) => { for (let x = from; x <= to; x++) colour.copy(out, (y * w + x) * 4); };
+  const foot = STAND.rows - 3;
+  paint(foot, p0 - 2, p1 + 2, outline), paint(foot, p0 - 1, p1 + 1, light);
+  paint(foot + 1, p0 - 3, p1 + 3, outline), paint(foot + 1, p0 - 2, p1 + 2, shade);
+  paint(foot + 2, p0 - 2, p1 + 2, outline);
+  await sharp(out, { raw: { width: w, height: STAND.rows, channels: 4 } }).png().toFile(`${OUT}/scale-stand.png`);
+  console.log(`${OUT}/scale-stand.png  base swapped for a foot, ${STAND.rows} rows`);
 }

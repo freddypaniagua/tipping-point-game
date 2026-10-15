@@ -63,12 +63,14 @@
              at y 425, just behind the front barrels' depth. -->
         <g id="pirate" transform="translate(-135 87)"></g>
 
-        <!-- The barrel, a little nearer the camera than the pirate. The scale sits on its lid. -->
-        <image href="/src/assets/art/barrel.png" x="199.5" y="263.5" width="121" />
+        <!-- The barrel, a copy of the front barrel on the right (scripts/process-art.mjs) at the
+             same depth, so it is nearer the camera than the pirate and runs off the bottom of the
+             picture like its neighbours. The scale stands in the middle of its lid, at (260, 330.4). -->
+        <image href="/src/assets/art/barrel.png" x="178.88" y="318" width="156.75" />
 
-        <!-- The scale itself, shrunk and moved so its base (200, 300) rests on the barrel lid.
+        <!-- The scale itself, shrunk and moved so the stand's foot (200, 333.67) rests on the lid.
              Its sizes are in its own units (one unit here is 0.75 of a scene unit). -->
-        <g id="rig" transform="translate(260 293.75) scale(0.75) translate(-200 -300)">
+        <g id="rig" transform="translate(260 330.4) scale(0.75) translate(-200 -333.67)">
         <image href="/src/assets/art/scale-stand.png" x="156" y="77" width="84.33" />
 
         <!-- the beam rotates about the pivot, the ball near the top of the stand -->
