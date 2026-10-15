@@ -3,7 +3,7 @@ import type { Weighin } from "./weighin";
 // Beam angle in degrees; positive = right end down.
 const DEG_PER_DECADE = 12; // each 10x of imbalance tilts the beam this much
 const MAX_ANGLE = 18;
-const BEAM_HALF = 140;
+const BEAM_HALF = 121; // pivot to ring: 33 art pixels of the beam sprite (index.html)
 const PIVOT = { x: 200, y: 110 };
 const PILE_CAP = 30; // never draw more than this many sprites; the counter carries the rest
 const PILE_COLS = 6;
@@ -55,7 +55,6 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   const leftPan = svg.querySelector<SVGGElement>("#pan-left")!;
   const rightPan = svg.querySelector<SVGGElement>("#pan-right")!;
   const pile = svg.querySelector<SVGGElement>("#pile")!;
-  const needle = svg.querySelector<SVGGElement>("#needle")!;
   const anchorArt = svg.querySelector<SVGGElement>("#anchor-art")!;
 
   let w = first;
@@ -75,7 +74,6 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
 
   function render() {
     beam.setAttribute("transform", `rotate(${angle} ${PIVOT.x} ${PIVOT.y})`);
-    needle.setAttribute("transform", `rotate(${angle * 2.2} ${PIVOT.x} ${PIVOT.y})`);
     const rad = (angle * Math.PI) / 180;
     const dx = BEAM_HALF * Math.cos(rad);
     const dy = BEAM_HALF * Math.sin(rad);

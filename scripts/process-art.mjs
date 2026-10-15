@@ -60,10 +60,12 @@ const JOBS = [
   // Generated at its own pixel size (about 5.7 raw pixels per art pixel), which is already the
   // pirate's grid, so no shrinking: it repeats sideways as a pattern (index.html).
   { name: "scene/dock", out: "dock", block: 5.73 },
-  { name: "props/barrel", out: "barrel", px: 44 },
-  { name: "props/scale-parts", out: "scale-stand", crop: [0.0, 0.03, 0.2, 0.97], px: 20 },
-  { name: "props/scale-parts", out: "scale-beam", crop: [0.2, 0.36, 0.72, 0.62], px: 84 },
-  { name: "props/scale-parts", out: "scale-pan", crop: [0.72, 0.08, 1.0, 0.92], px: 28 },
+  // One sheet in the market's style (generated with Nano Banana Pro), about 11.4 raw pixels per
+  // art pixel. The beam stays at that size; the rest shrink to fit beside the pirate.
+  { name: "props/barrel-scale", out: "barrel", block: 11.4, crop: [0.022, 0.18, 0.27, 0.81], px: 44 },
+  { name: "props/barrel-scale", out: "scale-stand", block: 11.4, crop: [0.316, 0.17, 0.463, 0.82], px: 23 },
+  { name: "props/barrel-scale", out: "scale-beam", block: 11.4, crop: [0.47, 0.45, 0.79, 0.55] },
+  { name: "props/barrel-scale", out: "scale-pan", block: 11.4, crop: [0.795, 0.24, 0.97, 0.73], px: 30 },
   // Until a plain horse is generated (art/raw/objects/horse), use the Trojan Horse with its wheels cut off.
   rawFile("objects/horse")
     ? { name: "objects/horse", block: 15, max: 32 }
