@@ -1,5 +1,5 @@
 import "./style.css";
-import { CLOSE, WIDE, pan } from "./camera";
+import { CLOSE, WIDE, pan, refit, setView } from "./camera";
 import { SAMPLE_STATS, loadCrowd, percentBeaten, type CrowdStats } from "./crowd";
 import { createGuessInput } from "./input";
 import { createPirate } from "./pirate";
@@ -32,7 +32,11 @@ function aimBubble() {
   const x = head.left + head.width * 0.55 - box.left; // his face sits a little right of centre
   question.style.setProperty("--tail-x", `${Math.min(box.width - 16, Math.max(16, x))}px`);
 }
-window.addEventListener("resize", aimBubble);
+window.addEventListener("resize", () => {
+  refit(stage);
+  aimBubble();
+});
+setView(stage, WIDE);
 
 let index = 0; // which of today's weigh-ins is on the scale
 let committed = false;

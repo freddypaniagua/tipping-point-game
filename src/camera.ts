@@ -10,14 +10,47 @@ export interface View {
   h: number;
 }
 
-// Each view includes empty sky above the pirate and dock below the barrel: that is where the
-// title, speech bubble and controls float, so they never cover him or the scale.
-export const WIDE: View = { x: -160, y: -520, w: 600, h: 1100 }; // welcome: the dock from further back
-export const CLOSE: View = { x: -150, y: -190, w: 580, h: 670 }; // play: the pirate beside the barrel and scale
+// Each view includes empty sky above the pirate and boardwalk below the barrel: that is where
+// the title, speech bubble and controls float, so they never cover him or the scale. Both end
+// at the bottom of the market picture.
+export const WIDE: View = { x: -160, y: -400, w: 600, h: 850 }; // welcome: the market from further back
+export const CLOSE: View = { x: -150, y: -190, w: 580, h: 640 }; // play: the pirate beside the barrel and scale
+
+/** Left and right edges of the market picture (index.html). The camera never shows past them. */
+export const SCENE = { left: -781.75, right: 959 };
+
+/**
+ * The view to use in a window of this shape (width / height). The stage always shows the whole
+ * view, plus extra on the sides when the window is wider than the view. If that extra would run
+ * past the picture, the view shrinks (keeping its bottom edge, so only sky is lost) until the
+ * window's width fits, then slides sideways to stay inside. Exported for testing.
+ */
+export function fit(v: View, aspect: number): View {
+  const sceneW = SCENE.right - SCENE.left;
+  let { x, y, w, h } = v;
+  const shown = Math.max(w, h * aspect); // how wide the window's view actually is
+  if (shown > sceneW) {
+    const k = sceneW / shown;
+    const cx = x + w / 2;
+    [w, h] = [w * k, h * k];
+    [x, y] = [cx - w / 2, v.y + v.h - h];
+  }
+  const half = Math.max(w, h * aspect) / 2;
+  const cx = Math.min(SCENE.right - half, Math.max(SCENE.left + half, x + w / 2));
+  return { x: cx - w / 2, y, w, h };
+}
+
+let current: View = WIDE; // the last view asked for, so a resized window can be refitted
 
 export function setView(svg: SVGSVGElement, v: View) {
-  svg.setAttribute("viewBox", `${v.x} ${v.y} ${v.w} ${v.h}`);
+  current = v;
+  const aspect = svg.clientWidth / svg.clientHeight || 1;
+  const f = fit(v, aspect);
+  svg.setAttribute("viewBox", `${f.x} ${f.y} ${f.w} ${f.h}`);
 }
+
+/** Refit the current view after the window changes shape. */
+export const refit = (svg: SVGSVGElement) => setView(svg, current);
 
 /** Position partway from `a` to `b`; `t` runs from 0 to 1. Exported for testing. */
 export function between(a: View, b: View, t: number): View {

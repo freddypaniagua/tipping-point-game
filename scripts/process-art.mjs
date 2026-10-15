@@ -53,12 +53,10 @@ const JOBS = [
   { name: "scene/clouds", out: "cloud-4", crop: [0.75, 0.2, 1.0, 0.8], px: 40 },
   { name: "scene/sea", out: "sea", key: false, crop: [0, 0.41, 1, 0.7], px: 248 },
   { name: "scene/town", out: "town", px: 64 },
-  // The harbour market (art/raw/reference/market-mood.jpg cut into layers). The market and its
-  // ships come from one picture, so they are left untrimmed and full-frame: drawn at the same
-  // spot, they line up. About 3.4 raw pixels per art pixel, which sits on the pirate's grid.
-  { name: "scene/market", out: "market", block: 3.4, trim: false },
-  { name: "scene/ship-left", out: "ship-left", block: 3.4, trim: false },
-  { name: "scene/ship-right", out: "ship-right", block: 3.4, trim: false },
+  // The harbour market (art/raw/reference/market-wide.jpg with sky and water made magenta, so
+  // the moving sky, clouds and sea layers show through). About 5 raw pixels per art pixel,
+  // which sits on the pirate's grid. Untrimmed, so its position in index.html is exact.
+  { name: "scene/market", out: "market", block: 5, trim: false },
   // Generated at its own pixel size (about 5.7 raw pixels per art pixel), which is already the
   // pirate's grid, so no shrinking: it repeats sideways as a pattern (index.html).
   { name: "scene/dock", out: "dock", block: 5.73 },

@@ -24,8 +24,7 @@ used as it is (with bigger pixels) until it is redrawn.
 | `scene/clouds` | Four clouds in a row, spaced evenly across the image | about 40 x 25 each | magenta |
 | `scene/sea` | Sea strip | 248 wide | none (fills the image) |
 | `scene/town` | Distant harbour town | 64 x 20 | magenta |
-| `scene/market` | **Market scene (experiment, branch `market-scene`).** The mood picture `reference/market-mood.jpg` with sky, water and ships cut out (magenta). Full-frame, untrimmed. | 404 x 225 | magenta where sky and water show |
-| `scene/ship-left`, `scene/ship-right` | The two galleons cut from the same picture, full-frame so they line up with the market; they bob. | 404 x 225 | magenta |
+| `scene/market` | **Market scene (experiment, branch `market-scene`).** `reference/market-wide.jpg` (outpainted from `reference/market-mood.jpg`) with sky, clouds and water turned magenta by an edit, so the moving sky, clouds and sea show through. Ships stay in this layer. Full-frame, untrimmed. | 633 x 268 | magenta where sky and water show |
 | `scene/dock` | The dock everything stands on. Done at 2x (generated with Nano Banana Pro). It repeats sideways, and its planks repeat downward, so any width works. | 240 x 127 | magenta above the dock |
 | `props/barrel` | Barrel the scale sits on | 44 x 62 | magenta |
 | `props/scale-parts` | Stand, beam and one pan, laid out separately | stand 20 x 58, beam 84 x 12, pan 28 x 42 | magenta |
