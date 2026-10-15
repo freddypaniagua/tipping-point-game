@@ -72,9 +72,15 @@ h1 { margin: 0; font-family: var(--pixel); font-size: 28px; line-height: 1.15; f
 .breathe { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe 2.8s ease-in-out infinite alternate; }
 @keyframes breathe { from { transform: scale(1, 1); } to { transform: scale(1.006, 1.014); } }
 
-/* Each new counterweight pops in as it lands. */
-.pop { transform-box: fill-box; transform-origin: center bottom; animation: pop .18s ease-out; }
-@keyframes pop { from { transform: translateY(-10px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+/* Each object drops into its pan: it falls faster and faster (ease-in, like gravity), squashes
+   flat on impact, springs back a little taller, then settles. Units are the scale's own. */
+.drop { transform-box: fill-box; transform-origin: center bottom; animation: drop .36s both; }
+@keyframes drop {
+  0% { transform: translateY(-90px); animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  60% { transform: translateY(0) scale(1.12, .82); animation-timing-function: ease-out; }
+  80% { transform: translateY(0) scale(.95, 1.06); }
+  100% { transform: none; }
+}
 
 .readout { min-height: 1.5em; margin: 0 0 8px; font-size: 18px; font-variant-numeric: tabular-nums; }
 
@@ -125,5 +131,5 @@ button:disabled, input:disabled { opacity: .5; cursor: default; }
 .dev[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pop, .reveal, .results, .cloud, .sea, .sparkle, .breathe { animation: none; }
+  .drop, .reveal, .results, .cloud, .sea, .sparkle, .breathe { animation: none; }
 }

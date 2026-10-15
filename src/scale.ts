@@ -1,3 +1,4 @@
+import { heapSlot } from "./heap";
 import type { Weighin } from "./weighin";
 
 // Beam angle in degrees; positive = right end down.
@@ -5,8 +6,6 @@ const DEG_PER_DECADE = 12; // each 10x of imbalance tilts the beam this much
 const MAX_ANGLE = 18;
 const BEAM_HALF = 121; // pivot to ring: 33 art pixels of the beam sprite (index.html)
 const PIVOT = { x: 200, y: 110 };
-const PILE_CAP = 30; // never draw more than this many sprites; the counter carries the rest
-const PILE_COLS = 6;
 
 // Underdamped spring: this is what makes the beam overshoot and wobble before it rests.
 const STIFFNESS = 90;
@@ -14,8 +13,12 @@ const DAMPING = 7;
 const HOLD_AFTER_LAST_DROP_MS = 600; // minimum suspense beat, even if the spring is already still
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const SPRITE = { w: 16, h: 12 }; // size of one counterweight in the pile
-const ANCHOR = { w: 117.33, h: 117.33 }; // box the anchor object is fitted into: 16 art pixels square
+// Sizes in the scale's own units, where one art pixel is 11/3 (index.html). Objects stand on the
+// floor of the pan's dish (the pile's origin), just behind its front lip.
+const PX = 11 / 3;
+const COUNTER = { w: 8 * PX, h: 9 * PX }; // box one counterweight is fitted into
+const SLOT = { across: 6.5 * PX, up: 6 * PX }; // neighbours in the heap overlap a little, so they rest on each other
+const ANCHOR = { w: 28 * PX, h: 28 * PX }; // box the anchor object is fitted into, about the dish's width
 
 // Every sprite in assets/art/objects, keyed by file name. Vite turns each into a hashed URL.
 const SPRITES = Object.fromEntries(
@@ -33,6 +36,14 @@ function objectArt(icon: string | undefined, width: number, height: number): SVG
   art.setAttribute("height", String(height));
   if (url) art.setAttribute("preserveAspectRatio", "xMidYMax meet");
   return art;
+}
+
+/** Wrap art so it drops into the pan as it appears: it falls, squashes on landing and settles (style.css). */
+function falling(art: SVGElement): SVGGElement {
+  const g = document.createElementNS(SVG_NS, "g");
+  g.setAttribute("class", "drop");
+  g.append(art);
+  return g;
 }
 
 /** Beam angle when `count` counterweights sit on the right pan. Depends only on real weights. */
@@ -65,7 +76,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   function load(next: Weighin) {
     w = next;
     pile.replaceChildren();
-    anchorArt.replaceChildren(objectArt(w.anchor.icon, ANCHOR.w, ANCHOR.h));
+    anchorArt.replaceChildren(falling(objectArt(w.anchor.icon, ANCHOR.w, ANCHOR.h)));
     svg.setAttribute("aria-label", `A balance scale with ${w.anchor.article} ${w.anchor.name} on the left pan`);
     angle = angleFor(w, 0);
     velocity = 0;
@@ -83,14 +94,11 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   }
 
   function addSprite(index: number) {
-    const col = index % PILE_COLS;
-    const row = Math.floor(index / PILE_COLS);
+    const slot = heapSlot(index);
+    if (!slot) return; // the heap is full; the counter carries the rest
     const g = document.createElementNS(SVG_NS, "g");
-    g.setAttribute("transform", `translate(${-39 + col * 15.5} ${-16 - row * 13})`);
-    const pop = document.createElementNS(SVG_NS, "g");
-    pop.setAttribute("class", "pop");
-    pop.append(objectArt(w.counter.icon, SPRITE.w, SPRITE.h));
-    g.append(pop);
+    g.setAttribute("transform", `translate(${slot.across * SLOT.across - COUNTER.w / 2} ${-slot.row * SLOT.up - COUNTER.h})`);
+    g.append(falling(objectArt(w.counter.icon, COUNTER.w, COUNTER.h)));
     pile.append(g);
   }
 
@@ -126,7 +134,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
           last = now;
           const t = Math.max(0, Math.min(1, (now - start) / dropMs));
           const n = Math.round(count * Math.pow(t, 1.5));
-          for (; shown < n; shown++) if (shown < PILE_CAP) addSprite(shown);
+          for (; shown < n; shown++) addSprite(shown);
           onCount(n);
 
           const target = angleFor(w, n);

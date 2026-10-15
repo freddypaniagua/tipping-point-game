@@ -17,6 +17,11 @@
     <svg id="scale" class="stage" viewBox="-160 -230 600 680" preserveAspectRatio="xMidYMax meet" role="img" aria-label="A balance scale">
         <defs>
           <!-- Fallback for objects without art yet: a plain brass weight. -->
+          <!-- The front lip of a scale pan: the pan's art from pixel row 44 down, clipped by this
+               nested <svg>. Drawn over whatever is in the pan. -->
+          <svg id="pan-lip" x="-56.83" y="157.67" width="110" height="18.33">
+            <image href="/src/assets/art/scale-pan.png" y="-161.33" width="110" />
+          </svg>
           <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
             <path d="M4.5 3 H11.5 L13.5 12 H2.5Z" fill="#a8842f" />
@@ -76,14 +81,18 @@
         <!-- the beam rotates about the pivot, the ball near the top of the stand -->
         <g id="beam"><image href="/src/assets/art/scale-beam.png" x="64.33" y="95.33" width="267.67" /></g>
 
-        <!-- pans hang from the beam ends and stay level; objects stand on the plate -->
+        <!-- Pans hang from the beam ends and stay level. Objects stand on the floor of the dish
+             (y 161.33, its art pixel row 45) and the dish's front lip is drawn again over them,
+             so their feet sit inside the pan rather than in front of it. -->
         <g id="pan-left">
           <image href="/src/assets/art/scale-pan.png" x="-56.83" y="-3.67" width="110" />
-          <g id="anchor-art" transform="translate(-58.67 14.7)"></g>
+          <g id="anchor-art" transform="translate(-51.33 58.67)"></g>
+          <use href="#pan-lip" />
         </g>
         <g id="pan-right">
           <image href="/src/assets/art/scale-pan.png" x="-56.83" y="-3.67" width="110" />
-          <g id="pile" transform="translate(0 130)"></g>
+          <g id="pile" transform="translate(0 161.33)"></g>
+          <use href="#pan-lip" />
         </g>
         </g>
 
