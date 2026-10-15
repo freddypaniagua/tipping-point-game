@@ -18,7 +18,7 @@ const reset = $<HTMLButtonElement>("#reset");
 
 const input = createGuessInput(controls);
 const stage = $<SVGSVGElement>("#scale");
-const scale = createScale(stage, WEIGHINS[0]);
+const scale = createScale(stage);
 
 const bubble = $<HTMLElement>("#bubble");
 const question = $<HTMLElement>("#question");

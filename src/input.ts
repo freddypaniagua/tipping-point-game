@@ -19,6 +19,13 @@ function prevSnap(v: number): number {
   return [...SNAPS].reverse().find((s) => s < v) ?? SNAPS[0];
 }
 
+const digitsOf = (text: string) => text.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+/** "1234567" -> "1,234,567". Exported for testing. */
+export function withCommas(digits: string): string {
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 export interface GuessInput {
   value(): number;
   /** Back to the starting value, ready for the next weigh-in. */
@@ -31,16 +38,26 @@ export function createGuessInput(root: HTMLElement, initial = 10): GuessInput {
   const down = root.querySelector<HTMLButtonElement>("#guess-down")!;
   const up = root.querySelector<HTMLButtonElement>("#guess-up")!;
 
+  // The field is plain text so it can show thousands separators (1,000,000); only digits count.
   const read = () => {
-    const n = Math.round(Number(field.value));
-    return Number.isFinite(n) ? Math.min(MAX_GUESS, Math.max(1, n)) : 1;
+    const n = Number(digitsOf(field.value));
+    return Math.min(MAX_GUESS, Math.max(1, n));
   };
-  const write = (n: number) => (field.value = String(n));
+  const write = (n: number) => (field.value = withCommas(String(n)));
 
   write(initial);
   down.addEventListener("click", () => write(prevSnap(read())));
   up.addEventListener("click", () => write(nextSnap(read())));
-  // Normalise typed values (clamp, drop decimals) once the player leaves the field.
+  // Add the commas while the player types, keeping the cursor after the same digit.
+  field.addEventListener("input", () => {
+    const digitsBefore = digitsOf(field.value.slice(0, field.selectionStart ?? field.value.length)).length;
+    const digits = digitsOf(field.value).slice(0, String(MAX_GUESS).length);
+    field.value = withCommas(digits);
+    let caret = 0;
+    for (let seen = 0; caret < field.value.length && seen < digitsBefore; caret++) if (/\d/.test(field.value[caret])) seen++;
+    field.setSelectionRange(caret, caret);
+  });
+  // Normalise the value (clamp to 1 to MAX_GUESS) once the player leaves the field.
   field.addEventListener("change", () => write(read()));
 
   return {

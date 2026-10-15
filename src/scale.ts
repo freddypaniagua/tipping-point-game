@@ -11,6 +11,7 @@ const PIVOT = { x: 200, y: 110 };
 const STIFFNESS = 90;
 const DAMPING = 7;
 const HOLD_AFTER_LAST_DROP_MS = 600; // minimum suspense beat, even if the spring is already still
+const LAND_MS = 216; // a dropped object hits the pan 60% into its 0.36s fall (style.css, .drop)
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 // Sizes in the scale's own units, where one art pixel is 11/3 (index.html). Objects stand on the
@@ -55,32 +56,53 @@ function angleFor(w: Weighin, count: number): number {
 }
 
 export interface ScaleView {
-  /** Set up a fresh weigh-in: anchor on the left pan, right pan empty and lifted. */
+  /**
+   * Set up a fresh weigh-in: empty the right pan and drop the anchor onto the left one. When it
+   * lands, the beam swings down to the left and settles.
+   */
   load(w: Weighin): void;
   /** Multiply `count` objects onto the right pan; resolves once the beam has settled. */
   weigh(count: number, onCount: (n: number) => void): Promise<void>;
 }
 
-export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
+/** The scale starts empty and level, until the first weigh-in is loaded. */
+export function createScale(svg: SVGSVGElement): ScaleView {
   const beam = svg.querySelector<SVGGElement>("#beam")!;
   const leftPan = svg.querySelector<SVGGElement>("#pan-left")!;
   const rightPan = svg.querySelector<SVGGElement>("#pan-right")!;
   const pile = svg.querySelector<SVGGElement>("#pile")!;
   const anchorArt = svg.querySelector<SVGGElement>("#anchor-art")!;
 
-  let w = first;
+  let w: Weighin;
   let angle = 0;
   let velocity = 0;
-  load(first);
+  let motion = 0; // bumped by every animation, so a newer one stops an older one's frames
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  render();
 
   function load(next: Weighin) {
     w = next;
     pile.replaceChildren();
     anchorArt.replaceChildren(falling(objectArt(w.anchor.icon, ANCHOR.w, ANCHOR.h)));
     svg.setAttribute("aria-label", `A balance scale with ${w.anchor.article} ${w.anchor.name} on the left pan`);
-    angle = angleFor(w, 0);
-    velocity = 0;
-    render();
+    const target = angleFor(w, 0);
+    if (reducedMotion) {
+      angle = target;
+      velocity = 0;
+      return render();
+    }
+    // The beam only moves once the anchor hits the pan, then swings and wobbles like any weighing.
+    const mine = ++motion;
+    let last: number | null = null;
+    const frame = (now: number) => {
+      if (mine !== motion) return;
+      last ??= now;
+      step(Math.max(0, Math.min(0.05, (now - last) / 1000)), target);
+      last = now;
+      render();
+      if (Math.abs(angle - target) > 0.05 || Math.abs(velocity) > 0.1) requestAnimationFrame(frame);
+    };
+    setTimeout(() => mine === motion && requestAnimationFrame(frame), LAND_MS);
   }
 
   function render() {
@@ -115,6 +137,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
   return {
     load,
     weigh(count, onCount) {
+      const mine = ++motion; // takes over from the anchor's landing if it is still swinging
       pile.replaceChildren();
       onCount(0);
       // Singles drop about one at a time; big counts accelerate and cap at ~2s.
@@ -129,6 +152,7 @@ export function createScale(svg: SVGSVGElement, first: Weighin): ScaleView {
         let calmSince: number | null = null;
 
         const frame = (now: number) => {
+          if (mine !== motion) return;
           if (start === null) start = last = now;
           const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
           last = now;

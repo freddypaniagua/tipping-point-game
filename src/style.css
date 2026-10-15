@@ -92,7 +92,7 @@ h1 { margin: 0; font-family: var(--pixel); font-size: 28px; line-height: 1.15; f
   border-radius: 10px; background: #fffaf0; color: var(--ink);
 }
 .stepper button { width: 52px; cursor: pointer; }
-.stepper input { width: 130px; text-align: center; font-variant-numeric: tabular-nums; }
+.stepper input { width: 170px; text-align: center; font-variant-numeric: tabular-nums; }
 button:disabled, input:disabled { opacity: .5; cursor: default; }
 
 .commit {

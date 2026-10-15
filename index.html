@@ -20,7 +20,8 @@
           <!-- The front lip of a scale pan: the pan's art from pixel row 44 down, clipped by this
                nested <svg>. Drawn over whatever is in the pan. -->
           <svg id="pan-lip" x="-56.83" y="157.67" width="110" height="18.33">
-            <image href="/src/assets/art/scale-pan.png" y="-161.33" width="110" />
+            <!-- Inline style: a <use> copy doesn't pick up the stylesheet's sharp-pixels rule. -->
+            <image href="/src/assets/art/scale-pan.png" y="-161.33" width="110" style="image-rendering: pixelated" />
           </svg>
           <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
@@ -129,7 +130,7 @@
             <form id="controls" class="controls" autocomplete="off">
               <div class="stepper">
                 <button type="button" id="guess-down" aria-label="Fewer">−</button>
-                <input id="guess" type="number" inputmode="numeric" min="1" max="1000000000" aria-label="Your guess" />
+                <input id="guess" type="text" inputmode="numeric" autocomplete="off" aria-label="Your guess" />
                 <button type="button" id="guess-up" aria-label="More">+</button>
               </div>
               <button type="submit" id="commit" class="commit">Weigh it</button>
