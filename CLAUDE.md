@@ -20,6 +20,9 @@ A daily browser estimation game. Each day every player gets the same 5 "weigh-in
 - Visual world (Victorian brass lab vs modern minimal vs other), share card design, final name.
 - Weight only, or later add height/time instruments.
 
+## Later work
+The plan for growing the object list, generating art in batches, the stats server and launch is in `DESIGN.md` under "Later: content pipeline and launch". Follow it when that work starts.
+
 ## Tech direction
 - Static site, mobile-first, deployable to GitHub Pages. Plain JS or a light framework; keep dependencies minimal.
 - Scale and objects in SVG or canvas; a small tweening/physics library is fine.

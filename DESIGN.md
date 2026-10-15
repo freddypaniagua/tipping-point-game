@@ -160,6 +160,41 @@ Prototype milestones:
 - [ ] Five weigh-ins in a row, then a results screen
 - [ ] Playtest with 3 to 5 friends and watch where they hesitate
 
+## Later: content pipeline and launch
+
+Agreed on 2026-10-15, to pick up once the core game is done. Order: finish the core game, grow
+the object list, generate its art in batches, then build the stats server and launch.
+
+**How many objects.** Fewer than it sounds. Every weigh-in pairs two objects and objects come back
+in new pairs, so 150 to 250 objects can cover a year of daily sets (5 a day is about 1,800
+pairings). Grow the list in batches rather than aiming for 1,000.
+
+**The real bottleneck is facts, not pictures.** Each object needs a sourced weight in pounds and a
+fun fact worth reading (see "Content and database"). That research sets the pace and the quality.
+
+**Art in batches, never live.**
+
+- A script finds objects in `src/data/objects.json` with no sprite and groups them nine at a time.
+- Each group becomes one 3 x 3 sheet, made with the `game-art` skill: Nano Banana Pro, with the
+  market and the pirate as style references.
+- Every batch is planned and its cost shown before anything is sent, and approved once as a
+  whole.
+- The sheets are then cut by `scripts/process-art.mjs`.
+- Every sheet is checked by eye before use. The first one drew grid lines and a flying
+  hummingbird.
+- Art is made ahead of time and committed. Players never trigger a generation, so nobody can run
+  up the bill.
+- Cost: about $0.134 a sheet, about 1.5 cents an object. 200 objects is about $3, and even 1,000
+  would be about $15, or around $30 with redos.
+
+**Stats server, close to launch.** Only the "better than X% of players" stats need a server
+(collect each day's guesses, return the summary). `src/crowd.ts` already expects its shape, and
+the game works without it. A free serverless service (Cloudflare Workers, Supabase) should be
+enough; the GitHub Student Developer Pack's cloud credits are a fallback.
+
+**Hosting.** The game itself stays on GitHub Pages (static, free, redeploys on push). A domain
+from the Student Developer Pack can point at it later.
+
 ## Decisions so far
 
 | Topic | Status | Current direction |
