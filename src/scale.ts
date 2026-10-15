@@ -1,4 +1,4 @@
-import { heapSlot } from "./heap";
+import { HEAP_CAP, heapSlot } from "./heap";
 import type { Weighin } from "./weighin";
 
 // Beam angle in degrees; positive = right end down.
@@ -148,7 +148,7 @@ export function createScale(svg: SVGSVGElement): ScaleView {
         // time turns the easing below into NaN, which would stick in the spring for good.
         let start: number | null = null;
         let last = 0;
-        let shown = 0;
+        let shown = 0; // counterweights counted so far (only the first HEAP_CAP are drawn)
         let calmSince: number | null = null;
         // The pan only feels each object's weight when it lands, LAND_MS after it appears.
         const appeared: { at: number; n: number }[] = [];
@@ -162,7 +162,10 @@ export function createScale(svg: SVGSVGElement): ScaleView {
           const t = Math.max(0, Math.min(1, (now - start) / dropMs));
           const n = Math.round(count * Math.pow(t, 1.5));
           if (n > shown) appeared.push({ at: now, n });
-          for (; shown < n; shown++) addSprite(shown);
+          // Only draw up to the top of the heap. Walking every one would freeze the page on a
+          // guess in the millions: the loop would run that many times within a few frames.
+          for (let i = shown; i < Math.min(n, HEAP_CAP); i++) addSprite(i);
+          shown = Math.max(shown, n);
           onCount(n);
           while (appeared.length && now - appeared[0].at >= LAND_MS) landed = appeared.shift()!.n;
 

@@ -51,8 +51,8 @@ export function createGuessInput(root: HTMLElement, initial = 10): GuessInput {
   // Add the commas while the player types, keeping the cursor after the same digit.
   field.addEventListener("input", () => {
     const digitsBefore = digitsOf(field.value.slice(0, field.selectionStart ?? field.value.length)).length;
-    const digits = digitsOf(field.value).slice(0, String(MAX_GUESS).length);
-    field.value = withCommas(digits);
+    const typed = digitsOf(field.value);
+    field.value = withCommas(Number(typed) > MAX_GUESS ? String(MAX_GUESS) : typed); // never show more than counts
     let caret = 0;
     for (let seen = 0; caret < field.value.length && seen < digitsBefore; caret++) if (/\d/.test(field.value[caret])) seen++;
     field.setSelectionRange(caret, caret);
