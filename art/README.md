@@ -25,6 +25,7 @@ used as it is (with bigger pixels) until it is redrawn.
 | `scene/sea` | Sea strip | 248 wide | none (fills the image) |
 | `scene/town` | Distant harbour town | 64 x 20 | magenta |
 | `scene/market` | **Market scene (experiment, branch `market-scene`).** `reference/market-wide.jpg` (outpainted from `reference/market-mood.jpg`) with sky, clouds and water turned magenta by an edit, so the moving sky, clouds and sea show through. Ships stay in this layer. Full-frame, untrimmed. | 633 x 268 | magenta where sky and water show |
+| (none) | `market-front.png`: the two barrels at the market's front right, cut out of `market.png` by `npm run art` and drawn over the pirate so he walks in behind them. Nothing to generate; if the market changes, check the barrel boxes in `FRONT` at the end of `scripts/process-art.mjs`. | 633 x 268 | transparent except the barrels |
 | `scene/dock` | The dock everything stands on. Done at 2x (generated with Nano Banana Pro). It repeats sideways, and its planks repeat downward, so any width works. | 240 x 127 | magenta above the dock |
 | `props/barrel` | Barrel the scale sits on | 44 x 62 | magenta |
 | `props/scale-parts` | Stand, beam and one pan, laid out separately | stand 20 x 58, beam 84 x 12, pan 28 x 42 | magenta |

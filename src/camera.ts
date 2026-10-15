@@ -10,11 +10,11 @@ export interface View {
   h: number;
 }
 
-// Each view includes empty sky above the pirate and boardwalk below the barrel: that is where
-// the title, speech bubble and controls float, so they never cover him or the scale. Both end
-// at the bottom of the market picture.
-export const WIDE: View = { x: -160, y: -290, w: 600, h: 740 }; // welcome: the market from further back
-export const CLOSE: View = { x: -150, y: -190, w: 580, h: 640 }; // play: the pirate beside the barrel and scale
+// The pirate and his scale stand at the bottom of each view, which ends at the bottom of the
+// market picture. The sky above them is where the title and the speech bubble (which holds the
+// controls) float, so they never cover him or the scale.
+export const WIDE: View = { x: -160, y: -230, w: 600, h: 680 }; // welcome: the market from further back
+export const CLOSE: View = { x: -150, y: -110, w: 580, h: 560 }; // play: the pirate beside the barrel and scale
 
 /** Left and right edges of the market picture (index.html). The camera never shows past them. */
 export const SCENE = { left: -781.75, right: 959 };
@@ -47,6 +47,13 @@ export function setView(svg: SVGSVGElement, v: View) {
   const aspect = svg.clientWidth / svg.clientHeight || 1;
   const f = fit(v, aspect);
   svg.setAttribute("viewBox", `${f.x} ${f.y} ${f.w} ${f.h}`);
+}
+
+/** The left and right edges of what the window actually shows, in scene units. */
+export function shown(svg: SVGSVGElement): { left: number; right: number } {
+  const { x, width, height } = svg.viewBox.baseVal;
+  const half = Math.max(width, height * (svg.clientWidth / svg.clientHeight || 1)) / 2;
+  return { left: x + width / 2 - half, right: x + width / 2 + half };
 }
 
 /** Refit the current view after the window changes shape. */

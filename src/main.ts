@@ -1,5 +1,5 @@
 import "./style.css";
-import { CLOSE, WIDE, pan, refit, setView } from "./camera";
+import { CLOSE, WIDE, pan, refit, setView, shown } from "./camera";
 import { SAMPLE_STATS, loadCrowd, percentBeaten, type CrowdStats } from "./crowd";
 import { createGuessInput } from "./input";
 import { createPirate } from "./pirate";
@@ -20,6 +20,7 @@ const input = createGuessInput(controls);
 const stage = $<SVGSVGElement>("#scale");
 const scale = createScale(stage, WEIGHINS[0]);
 
+const bubble = $<HTMLElement>("#bubble");
 const question = $<HTMLElement>("#question");
 const pirateArt = $<SVGGElement>("#pirate");
 const pirate = createPirate(pirateArt, question);
@@ -27,10 +28,10 @@ const pirate = createPirate(pirateArt, question);
 /** Point the speech bubble's tail at the pirate's head, wherever the window puts him. */
 function aimBubble() {
   const head = pirateArt.getBoundingClientRect();
-  const box = question.getBoundingClientRect();
+  const box = bubble.getBoundingClientRect();
   if (box.width === 0) return; // hidden
   const x = head.left + head.width * 0.55 - box.left; // his face sits a little right of centre
-  question.style.setProperty("--tail-x", `${Math.min(box.width - 16, Math.max(16, x))}px`);
+  bubble.style.setProperty("--tail-x", `${Math.min(box.width - 16, Math.max(16, x))}px`);
 }
 window.addEventListener("resize", () => {
   refit(stage);
@@ -119,7 +120,7 @@ function showResults() {
   $<HTMLElement>("#play").hidden = true;
   $("#progress").textContent = "Today's results";
   void pirate.say(""); // stop any line still typing before the bubble becomes a heading
-  question.classList.remove("bubble");
+  bubble.classList.remove("bubble");
   question.removeAttribute("aria-label");
   question.textContent = "Your weigh-ins";
   $("#total").textContent = String(totalPoints(rounds));
@@ -176,31 +177,28 @@ share.addEventListener("click", async () => {
 // carrying the copper kilogram France had sent to Thomas Jefferson (NIST, "Pirates of the
 // Caribbean: Metric Edition"), which is why this game weighs everything in pounds.
 // He walks on first and speaks once he has arrived; the bubble stays hidden until then.
-let started = false;
-question.style.visibility = "hidden";
-// He walks up the boardwalk from the harbour end. In scene units his boots rest at y 250 with
-// his middle at x -15; the boardwalk's far end (the horizon) is at y 180, centred at x 90.
-// Starting at y 200, he is (200 - 180) / (250 - 180) of his full size, about 0.29.
+bubble.style.visibility = "hidden";
+// He walks in from just past the right edge of the window, along the front of the boardwalk and
+// behind the front barrels. In scene units his middle stands at x -15 and he is 240 wide.
 const UNITS_PER_PIXEL = 2.75;
-void pirate.walkIn({ x: (90 + 15) / UNITS_PER_PIXEL, y: (200 - 250) / UNITS_PER_PIXEL, scale: 0.29 }).then(() => {
-  if (started) return; // the player didn't wait for him
+const offscreen = shown(stage).right + 130;
+void pirate.walkIn({ x: (offscreen + 15) / UNITS_PER_PIXEL, y: 0, scale: 1 }).then(() => {
   aimBubble();
-  question.style.visibility = "";
+  bubble.style.visibility = "";
   void pirate.say("We took the kilogram France sent to Jefferson. So on my dock, everything gets weighed in pounds.");
 });
 
 $<HTMLButtonElement>("#start").addEventListener("click", async () => {
-  started = true;
   document.querySelectorAll<HTMLElement>("[data-welcome]").forEach((part) => (part.hidden = true));
   void pirate.say(""); // stop the welcome line if it is still typing
-  question.style.visibility = "hidden"; // nothing to say while the camera moves
+  bubble.style.visibility = "hidden"; // nothing to say while the camera moves
   // He hops as the player steps up: a greeting, before any guess, so it gives nothing away.
   await Promise.all([pirate.hop(), pan(stage, WIDE, CLOSE)]);
-  aimBubble();
-  question.style.visibility = "";
   $<HTMLElement>("#progress").hidden = false;
   $<HTMLElement>("#play").hidden = false;
   show(0);
+  aimBubble(); // after the controls are in, which changes the bubble's size
+  bubble.style.visibility = "";
 });
 
 // Dev convenience so the animation can be replayed while tuning. Not part of the game

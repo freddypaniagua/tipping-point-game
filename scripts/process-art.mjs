@@ -217,3 +217,28 @@ for (const job of JOBS) {
   const written = await result.png().toFile(file);
   console.log(`${file}  block ${block}px  ->  ${written.width}x${written.height}`);
 }
+
+// The two barrels at the market's bottom right, as their own layer drawn over the pirate so he
+// can walk in behind them. Each barrel is given as a column range and the row its lid starts on.
+// A row of a barrel runs from its first to its last dark outline pixel; near the lid the range
+// is narrower, so the sacks behind it aren't caught.
+const FRONT = [
+  { x0: 460, x1: 521, top: 221 },
+  { x0: 510, x1: 571, top: 210 },
+];
+if (existsSync(`${OUT}/market.png`)) {
+  const { data, info } = await sharp(`${OUT}/market.png`).raw().toBuffer({ resolveWithObject: true });
+  const { width: w, height: h } = info;
+  const dark = (x, y) => data[(y * w + x) * 4 + 3] > 0 && data[(y * w + x) * 4] + data[(y * w + x) * 4 + 1] + data[(y * w + x) * 4 + 2] < 150;
+  const front = Buffer.alloc(w * h * 4); // same size as the market, so it lines up exactly
+  for (const { x0, x1, top } of FRONT) {
+    for (let y = top; y < h; y++) {
+      const [l, r] = y < top + 12 ? [x0 + 3, x1 - 9] : [x0, x1];
+      let a = -1, b = -1;
+      for (let x = l; x <= r; x++) if (dark(x, y)) (a = a < 0 ? x : a), (b = x);
+      if (a >= 0) data.copy(front, (y * w + a) * 4, (y * w + a) * 4, (y * w + b + 1) * 4);
+    }
+  }
+  await sharp(front, { raw: { width: w, height: h, channels: 4 } }).png().toFile(`${OUT}/market-front.png`);
+  console.log(`${OUT}/market-front.png  cut from market.png`);
+}

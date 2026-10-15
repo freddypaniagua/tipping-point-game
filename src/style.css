@@ -20,13 +20,12 @@ body {
 /* The scene is the page: it fills the window and the interface floats over it. */
 .stage { position: fixed; inset: 0; width: 100%; height: 100%; }
 
-/* One centred column: title and speech bubble at the top, controls at the bottom, and the
-   pirate and scale showing through the gap in between. */
+/* One centred column at the top: the title, then the pirate's speech bubble, which holds the
+   controls too. The pirate and his scale stand below it, at the bottom of the window. */
 .game {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 100dvh;
   max-width: 460px;
   margin: 0 auto;
@@ -37,19 +36,20 @@ body {
 /* Parchment card for anything that has to be read on top of the scene. */
 .panel { padding: 14px; background: var(--bg); border: 3px solid var(--ink); box-shadow: 4px 4px 0 rgb(0 0 0 / .35); }
 .panel[hidden] { display: none; }
-.welcome.panel, #play { margin-top: auto; } /* pinned to the bottom of the window */
 
 .eyebrow { margin: 0 0 6px; font-family: var(--pixel); font-size: 18px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); }
 h1 { margin: 0; font-family: var(--pixel); font-size: 28px; line-height: 1.15; font-weight: 400; }
 .welcome[hidden], .eyebrow[hidden] { display: none; }
 
-/* What the pirate says. The tail points down at him; the box has hard pixel corners. */
+/* What the pirate says, with the buttons for answering him underneath. The tail points down at
+   him; the box has hard pixel corners. */
 .bubble {
-  position: relative; margin: 0 auto 14px; padding: 12px 14px; min-height: 80px; max-width: 380px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--pixel); font-size: 25px; font-weight: 400; line-height: 1.15;
+  position: relative; margin: 0 auto 14px; padding: 12px 14px; min-height: 80px; max-width: 420px;
+  display: flex; flex-direction: column; justify-content: center;
   background: #fffaf0; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--brass-dark);
 }
+.bubble > h1 { font-size: 25px; }
+.bubble > .welcome, .bubble > #play { margin-top: 12px; }
 .bubble::after {
   content: ""; position: absolute; left: var(--tail-x, 50%); bottom: -13px; width: 14px; height: 10px;
   transform: translateX(-50%); background: var(--ink);

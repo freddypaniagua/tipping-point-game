@@ -12,26 +12,15 @@
   <body>
     <!-- The stage fills the whole window, behind the interface: the dock scene, the pirate, the
          barrel and the scale in one drawing. The viewBox is the camera (camera.ts): it is always
-         shown in full, and the scenery runs on past its edges to fill whatever shape the window is. -->
-    <svg id="scale" class="stage" viewBox="-160 -290 600 740" role="img" aria-label="A balance scale">
+         shown in full, with its bottom on the window's bottom. A taller window shows more sky
+         above it, a wider one more of the market on each side. -->
+    <svg id="scale" class="stage" viewBox="-160 -230 600 680" preserveAspectRatio="xMidYMax meet" role="img" aria-label="A balance scale">
         <defs>
           <!-- Fallback for objects without art yet: a plain brass weight. -->
           <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
             <rect x="6.5" y="0" width="3" height="3" rx="1" fill="#8c6a2f" />
             <path d="M4.5 3 H11.5 L13.5 12 H2.5Z" fill="#a8842f" />
           </symbol>
-          <!-- Only tall phone screens see past the bottom of the market picture. There, its own
-               front planks keep going: a strip from the bottom middle (art x 221 to 331, y 238 to
-               268) repeats sideways, every other copy mirrored, and downward. -->
-          <pattern id="boardwalk" patternUnits="userSpaceOnUse" x="-174" y="450" width="605" height="82.5">
-            <!-- Each half is a nested <svg>, which clips the picture to just that strip. -->
-            <svg width="302.5" height="82.5">
-              <image href="/src/assets/art/market.png" x="-607.75" y="-654.5" width="1740.75" height="737" />
-            </svg>
-            <svg width="302.5" height="82.5" transform="translate(605 0) scale(-1 1)">
-              <image href="/src/assets/art/market.png" x="-607.75" y="-654.5" width="1740.75" height="737" />
-            </svg>
-          </pattern>
         </defs>
 
         <!-- The dock, back to front. Every piece is its own image so each can move by itself
@@ -68,19 +57,18 @@
              units each. The gap is centred on the pirate and his scale, and the camera never
              looks past the picture's sides (camera.ts, SCENE). -->
         <image href="/src/assets/art/market.png" x="-781.75" y="-287" width="1740.75" height="737" />
-        <rect x="-3000" y="450" width="6400" height="1300" fill="url(#boardwalk)" />
 
-        <!-- The pirate stands on the open boardwalk to the left of the barrel, so the scale has
-             clear sea and sky behind it. This is his sprite's top-left corner; pirate.ts draws him at one art
-             pixel = 2.75 units, so his boots rest at y 250. -->
-        <g id="pirate" transform="translate(-135 -88)"></g>
+        <!-- The pirate stands at the front of the boardwalk, beside his scale. This is his sprite's
+             top-left corner; pirate.ts draws him at one art pixel = 2.75 units, so his boots rest
+             at y 425, just behind the front barrels' depth. -->
+        <g id="pirate" transform="translate(-135 87)"></g>
 
-        <!-- The barrel, nearer the camera than the pirate. The scale sits on its lid. -->
-        <image href="/src/assets/art/barrel.png" x="199.5" y="205" width="121" />
+        <!-- The barrel, a little nearer the camera than the pirate. The scale sits on its lid. -->
+        <image href="/src/assets/art/barrel.png" x="199.5" y="274.5" width="121" />
 
         <!-- The scale itself, shrunk and moved so its base (200, 300) rests on the barrel lid.
              Its sizes are in its own units (one unit here is 0.75 of a scene unit). -->
-        <g id="rig" transform="translate(260 217) scale(0.75) translate(-200 -300)">
+        <g id="rig" transform="translate(260 286.5) scale(0.75) translate(-200 -300)">
         <image href="/src/assets/art/scale-stand.png" x="163.33" y="87.3" width="73.33" />
 
         <!-- beam + needle rotate about the pivot -->
@@ -97,6 +85,11 @@
           <g id="pile" transform="translate(0 130)"></g>
         </g>
         </g>
+
+        <!-- The two barrels at the front right of the market, cut out of the same picture
+             (scripts/process-art.mjs) and drawn again over everything, so the pirate walks in
+             behind them. -->
+        <image href="/src/assets/art/market-front.png" x="-781.75" y="-287" width="1740.75" height="737" />
       </svg>
 
     <main class="game">
@@ -108,37 +101,39 @@
 
       <header>
         <p id="progress" class="eyebrow" hidden></p>
-        <!-- The pirate's speech bubble; a plain heading on the results screen. -->
-        <h1 id="question" class="bubble"></h1>
-      </header>
+        <!-- The pirate's speech bubble. Everything to read or press lives in it, so nothing
+             covers the pirate and his scale at the bottom of the window. A plain heading on the
+             results screen. -->
+        <div id="bubble" class="bubble">
+          <h1 id="question"></h1>
 
+          <!-- Welcome screen, part 2: the rules and the one button. -->
+          <div class="welcome" data-welcome>
+            <p class="rules">5 weigh-ins · one shot each · the closer your guess, the more level the scale</p>
+            <button type="button" id="start" class="commit">Step up to the scale</button>
+          </div>
 
-      <!-- Welcome screen, part 2: the rules and the one button. -->
-      <div class="welcome panel" data-welcome>
-        <p class="rules">5 weigh-ins · one shot each · the closer your guess, the more level the scale</p>
-        <button type="button" id="start" class="commit">Step up to the scale</button>
-      </div>
+          <div id="play" hidden>
+            <p id="count-readout" class="readout" aria-live="off">&nbsp;</p>
 
-      <div id="play" class="panel" hidden>
+            <form id="controls" class="controls" autocomplete="off">
+              <div class="stepper">
+                <button type="button" id="guess-down" aria-label="Fewer">−</button>
+                <input id="guess" type="number" inputmode="numeric" min="1" max="1000000000" aria-label="Your guess" />
+                <button type="button" id="guess-up" aria-label="More">+</button>
+              </div>
+              <button type="submit" id="commit" class="commit">Weigh it</button>
+            </form>
 
-      <p id="count-readout" class="readout" aria-live="off">&nbsp;</p>
-
-      <form id="controls" class="controls" autocomplete="off">
-        <div class="stepper">
-          <button type="button" id="guess-down" aria-label="Fewer">−</button>
-          <input id="guess" type="number" inputmode="numeric" min="1" max="1000000000" aria-label="Your guess" />
-          <button type="button" id="guess-up" aria-label="More">+</button>
+            <section id="reveal" class="reveal" hidden aria-live="polite">
+              <p class="answer">It takes about <strong id="answer"></strong>.</p>
+              <p id="result" class="result"></p>
+              <p id="fact" class="fact"></p>
+              <button type="button" id="next" class="commit next" hidden>Next weigh-in</button>
+            </section>
+          </div>
         </div>
-        <button type="submit" id="commit" class="commit">Weigh it</button>
-      </form>
-
-      <section id="reveal" class="reveal" hidden aria-live="polite">
-        <p class="answer">It takes about <strong id="answer"></strong>.</p>
-        <p id="result" class="result"></p>
-        <p id="fact" class="fact"></p>
-        <button type="button" id="next" class="commit next" hidden>Next weigh-in</button>
-      </section>
-      </div>
+      </header>
 
       <!-- End of the day: total, rating, a recap of all five rounds and the share button. -->
       <section id="results" class="results panel" hidden>

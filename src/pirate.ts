@@ -58,7 +58,7 @@ const FLAP_EVERY = 3; // the mouth changes every few characters
 const BLINK_MS = 140;
 
 // Motion, in sprite pixels and milliseconds.
-const WALK_MS = 2600;
+const WALK_SPEED = 0.1; // sprite pixels per millisecond, on average over a walk
 const STEP_MS = 190; // one footfall
 const STEP_HEIGHT = 2; // bob per step
 const STEP_LIFT = 2; // how high a boot comes off the dock
@@ -202,9 +202,10 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
     async walkIn(from) {
       if (reducedMotion) return;
       await ready; // so he arrives with his arms and legs already moving
-      const steps = Math.round(WALK_MS / STEP_MS); // whole steps, so he ends on the ground
+      const ms = Math.hypot(from.x, from.y) / WALK_SPEED; // a longer way takes longer, at the same pace
+      const steps = Math.round(ms / STEP_MS); // whole steps, so he ends on the ground
       at.walking = true;
-      await tween(WALK_MS, (t) => {
+      await tween(ms, (t) => {
         const left = 1 - Math.sin((t * Math.PI) / 2); // share of the way still to go; slows at the end
         // He grows as his feet come nearer, so he keeps his size relative to the boardwalk.
         at.scale = 1 - (1 - from.scale) * left;
