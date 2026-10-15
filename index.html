@@ -13,7 +13,7 @@
     <!-- The stage fills the whole window, behind the interface: the dock scene, the pirate, the
          barrel and the scale in one drawing. The viewBox is the camera (camera.ts): it is always
          shown in full, and the scenery runs on past its edges to fill whatever shape the window is. -->
-    <svg id="scale" class="stage" viewBox="-160 -400 600 850" role="img" aria-label="A balance scale">
+    <svg id="scale" class="stage" viewBox="-160 -290 600 740" role="img" aria-label="A balance scale">
         <defs>
           <!-- Fallback for objects without art yet: a plain brass weight. -->
           <symbol id="weight" viewBox="0 0 16 12" preserveAspectRatio="xMidYMax meet" overflow="visible">
@@ -38,7 +38,14 @@
              (style.css); sizes are in the same units as the scale.
              Widths are in units, sized so every sprite shares one pixel grid: at the current art one
              pixel is 5.5 units, and art drawn at twice the detail (art/README.md) lands at 2.75. -->
-        <image href="/src/assets/art/sky.png" x="-1400" y="-1300" width="3200" height="1500" preserveAspectRatio="none" />
+        <!-- Sky: flat pixel-art bands in the market picture's own colours (sampled from it), from
+             high above any window down to the sunlit haze at the horizon. -->
+        <g>
+          <rect x="-3000" y="-4000" width="7000" height="3820" fill="#96c6d4" />
+          <rect x="-3000" y="-180" width="7000" height="66" fill="#b1cfc7" />
+          <rect x="-3000" y="-114" width="7000" height="69" fill="#d0d4b6" />
+          <rect x="-3000" y="-45" width="7000" height="90" fill="#e3c792" />
+        </g>
         <image class="cloud" href="/src/assets/art/cloud-1.png" y="-190" width="110" style="animation-duration: 150s; animation-delay: -20s" />
         <image class="cloud" href="/src/assets/art/cloud-2.png" y="-110" width="110" style="animation-duration: 110s; animation-delay: -70s" />
         <image class="cloud" href="/src/assets/art/cloud-3.png" y="-150" width="110" style="animation-duration: 130s; animation-delay: -100s" />

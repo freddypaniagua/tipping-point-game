@@ -44,8 +44,11 @@ function node(tag: string, attrs: Record<string, string | number>): SVGElement {
 export interface Pirate {
   /** Type `text` into the speech bubble while the mouth moves. Resolves when he has finished. */
   say(text: string): Promise<void>;
-  /** Walk in from just past the right edge of the window to his spot. Resolves when he arrives. */
-  walkIn(): Promise<void>;
+  /**
+   * Walk to his spot from `from`: where his feet start, in sprite pixels from his spot, and how
+   * big he looks there (further away is smaller). Resolves when he arrives.
+   */
+  walkIn(from: { x: number; y: number; scale: number }): Promise<void>;
   /** Crouch, jump and land on his spot (cutting short a walk still under way). */
   hop(): Promise<void>;
 }
@@ -55,8 +58,7 @@ const FLAP_EVERY = 3; // the mouth changes every few characters
 const BLINK_MS = 140;
 
 // Motion, in sprite pixels and milliseconds.
-const WALK_SPEED = 150; // px per second
-const MAX_WALK_MS = 2600; // on very wide windows he walks faster rather than for longer
+const WALK_MS = 2600;
 const STEP_MS = 190; // one footfall
 const STEP_HEIGHT = 2; // bob per step
 const STEP_LIFT = 2; // how high a boot comes off the dock
@@ -86,7 +88,7 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
   // hops (set from JS), the inner one breathes. (A CSS animation replaces an element's
   // transform, so the breathing can't share an element with anything else.)
   // Inside, back to front: boots, the body, mouth and eye patches, then the hands.
-  const fit = node("g", { transform: `scale(${PIXEL})` }) as SVGGElement;
+  const fit = node("g", { transform: `scale(${PIXEL})` });
   const pose = node("g", {});
   const body = node("g", { class: "breathe", "shape-rendering": "crispEdges" });
   const behind = node("g", {});
@@ -103,7 +105,7 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
 
   // Where he is relative to his spot. Walks and hops set `x`, `y`, `squash`, `stride` and
   // `flare`; talking sets `lift` and `talking`. The loop below turns these into a drawing.
-  const at = { x: 0, y: 0, squash: 1, lift: 0, walking: false, stride: 0, flare: 0, talking: false };
+  const at = { x: 0, y: 0, scale: 1, squash: 1, lift: 0, walking: false, stride: 0, flare: 0, talking: false };
   let gesture = 0; // eases from 0 to 1 when he starts talking, so the hand rises rather than jumps
 
   // Until the cut-out parts are ready (a few ms after load), he is drawn as the plain sprite.
@@ -113,21 +115,22 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
   const draw = (now: number) => {
     // Round to whole pixels so the sprite never lands between grid lines and blurs.
     let t = `translate(${Math.round(at.x)} ${Math.round(at.y) - at.lift})`;
-    if (at.squash !== 1) {
-      // Squash about his feet: shorter and wider by the same amount, so he keeps his volume.
+    if (at.squash !== 1 || at.scale !== 1) {
+      // Scale about his feet: `scale` for distance, and a squash that makes him shorter and
+      // wider by the same amount, so he keeps his volume.
       const [cx, cy] = [SPRITE.w / 2, SPRITE.h];
-      t += ` translate(${cx} ${cy}) scale(${2 - at.squash} ${at.squash}) translate(${-cx} ${-cy})`;
+      const [sx, sy] = [at.scale * (2 - at.squash), at.scale * at.squash];
+      t += ` translate(${cx} ${cy}) scale(${sx} ${sy}) translate(${-cx} ${-cy})`;
     }
     pose.setAttribute("transform", t);
     if (!rig) return;
 
-    // Each stride is one footstep; the boots take turns, each rising and moving a pixel forward
-    // (to the left, the way he faces).
+    // Each stride is one footstep; the boots take turns lifting (he walks toward the viewer).
     const step = Math.floor(at.stride), into = at.stride - step;
     const lift = at.walking ? Math.round(STEP_LIFT * Math.sin(into * Math.PI)) : 0;
     rig.boots.forEach((boot, i) => {
       const moving = lift > 0 && step % 2 === i;
-      boot.setAttribute("transform", moving ? `translate(-1 ${-lift})` : "");
+      boot.setAttribute("transform", moving ? `translate(0 ${-lift})` : "");
     });
     // Arms swing against the legs, like anyone walking.
     const swing = at.walking ? ARM_SWING * Math.sin(at.stride * Math.PI) : 0;
@@ -196,21 +199,18 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
       });
     },
 
-    async walkIn() {
+    async walkIn(from) {
       if (reducedMotion) return;
       await ready; // so he arrives with his arms and legs already moving
-      // He faces left, so he comes in from the right (passing behind the barrel), starting with
-      // his left edge just past the window's right edge. `fit` maps sprite pixels to the screen,
-      // so its matrix says where pixel 0 is (e) and how big one pixel is (a).
-      const ctm = fit.getScreenCTM();
-      const from = ctm ? Math.max(SPRITE.w, (window.innerWidth - ctm.e) / ctm.a + 2) : SPRITE.w * 2;
-      const ms = Math.min(MAX_WALK_MS, (from / WALK_SPEED) * 1000);
-      const steps = Math.max(2, Math.round(ms / STEP_MS)); // whole steps, so he ends on the ground
+      const steps = Math.round(WALK_MS / STEP_MS); // whole steps, so he ends on the ground
       at.walking = true;
-      await tween(ms, (t) => {
-        at.x = from * (1 - Math.sin((t * Math.PI) / 2)); // slows down as he reaches his spot
+      await tween(WALK_MS, (t) => {
+        const left = 1 - Math.sin((t * Math.PI) / 2); // share of the way still to go; slows at the end
+        // He grows as his feet come nearer, so he keeps his size relative to the boardwalk.
+        at.scale = 1 - (1 - from.scale) * left;
         at.stride = t * steps;
-        at.y = -STEP_HEIGHT * Math.abs(Math.sin(at.stride * Math.PI));
+        at.x = from.x * left;
+        at.y = from.y * left - STEP_HEIGHT * at.scale * Math.abs(Math.sin(at.stride * Math.PI));
       });
       at.walking = false;
     },
@@ -218,6 +218,7 @@ export function createPirate(group: SVGGElement, bubble: HTMLElement): Pirate {
     hop() {
       if (reducedMotion) return Promise.resolve();
       at.x = 0; // a walk cut short ends on his spot
+      at.scale = 1;
       at.walking = false;
       return tween(HOP_MS, (t) => {
         at.flare = Math.sin(t * Math.PI); // arms out on the way up, back down as he lands

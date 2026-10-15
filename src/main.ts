@@ -178,7 +178,11 @@ share.addEventListener("click", async () => {
 // He walks on first and speaks once he has arrived; the bubble stays hidden until then.
 let started = false;
 question.style.visibility = "hidden";
-void pirate.walkIn().then(() => {
+// He walks up the boardwalk from the harbour end. In scene units his boots rest at y 250 with
+// his middle at x -15; the boardwalk's far end (the horizon) is at y 180, centred at x 90.
+// Starting at y 200, he is (200 - 180) / (250 - 180) of his full size, about 0.29.
+const UNITS_PER_PIXEL = 2.75;
+void pirate.walkIn({ x: (90 + 15) / UNITS_PER_PIXEL, y: (200 - 250) / UNITS_PER_PIXEL, scale: 0.29 }).then(() => {
   if (started) return; // the player didn't wait for him
   aimBubble();
   question.style.visibility = "";

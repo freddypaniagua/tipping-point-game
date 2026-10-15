@@ -13,7 +13,7 @@ export interface View {
 // Each view includes empty sky above the pirate and boardwalk below the barrel: that is where
 // the title, speech bubble and controls float, so they never cover him or the scale. Both end
 // at the bottom of the market picture.
-export const WIDE: View = { x: -160, y: -400, w: 600, h: 850 }; // welcome: the market from further back
+export const WIDE: View = { x: -160, y: -290, w: 600, h: 740 }; // welcome: the market from further back
 export const CLOSE: View = { x: -150, y: -190, w: 580, h: 640 }; // play: the pirate beside the barrel and scale
 
 /** Left and right edges of the market picture (index.html). The camera never shows past them. */
