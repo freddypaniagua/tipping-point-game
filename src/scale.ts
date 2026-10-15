@@ -150,6 +150,9 @@ export function createScale(svg: SVGSVGElement): ScaleView {
         let last = 0;
         let shown = 0;
         let calmSince: number | null = null;
+        // The pan only feels each object's weight when it lands, LAND_MS after it appears.
+        const appeared: { at: number; n: number }[] = [];
+        let landed = 0;
 
         const frame = (now: number) => {
           if (mine !== motion) return;
@@ -158,14 +161,16 @@ export function createScale(svg: SVGSVGElement): ScaleView {
           last = now;
           const t = Math.max(0, Math.min(1, (now - start) / dropMs));
           const n = Math.round(count * Math.pow(t, 1.5));
+          if (n > shown) appeared.push({ at: now, n });
           for (; shown < n; shown++) addSprite(shown);
           onCount(n);
+          while (appeared.length && now - appeared[0].at >= LAND_MS) landed = appeared.shift()!.n;
 
-          const target = angleFor(w, n);
+          const target = angleFor(w, landed);
           step(dt, target);
           render();
 
-          if (t >= 1) {
+          if (t >= 1 && landed === count) {
             const still = Math.abs(angle - target) < 0.12 && Math.abs(velocity) < 0.6;
             if (still) calmSince ??= now;
             else calmSince = null;
